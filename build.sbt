@@ -24,12 +24,17 @@ libraryDependencies ++= Seq(
 
 val genJooqModel = taskKey[Seq[File]]("Generate JOOQ classes")
 
-val genJooqTask = (sourceManaged, fullClasspath in Compile, runner in Compile, streams) map { (src, cp, r, s) =>
+val genJooqTask = Def.task {
+  val src = sourceManaged.value
+  val cp = (fullClasspath in Compile).value
+  val r = (runner in Compile).value
+  val s = streams.value
+
   toError(r.run("org.jooq.util.GenerationTool", cp.files, Array("conf/jooq.xml"), s.log))
   ((src / "main/generated") ** "*.scala").get
 }
 
-genJooqModel <<= genJooqTask
+genJooqModel := genJooqTask.value
 
 unmanagedSourceDirectories in Compile += sourceManaged.value / "main/generated"
 
