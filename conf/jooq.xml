@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration>
+    <jdbc>
+        <driver>org.postgresql.Driver</driver>
+        <url>jdbc:postgresql://localhost/lottery_db</url>
+        <user>lottery_role</user>
+        <password>lottery_pass</password>
+    </jdbc>
+
+    <generator>
+        <name>org.jooq.util.ScalaGenerator</name>
+
+        <database>
+            <customTypes>
+                <customType>
+                    <name>DateToLocalDateConverter</name>
+                    <type>java.time.LocalDate</type>
+                    <converter>com.serinus.loto.model.converters.DateToLocalDateConverter</converter>
+                </customType>
+
+                <customType>
+                    <name>TimestampToLocalDateTimeConverter</name>
+                    <type>java.time.LocalDateTime</type>
+                    <converter>com.serinus.loto.model.converters.TimestampToLocalDateTimeConverter</converter>
+                </customType>
+            </customTypes>
+
+            <forcedTypes>
+                <forcedType>
+                    <name>DateToLocalDateConverter</name>
+                    <types>Date</types>
+                </forcedType>
+                <forcedType>
+                    <name>TimestampToLocalDateTimeConverter</name>
+                    <types>Timestamp.*</types>
+                </forcedType>
+            </forcedTypes>
+
+            <name>org.jooq.util.postgres.PostgresDatabase</name>
+            <inputSchema>lottery_schema</inputSchema>
+            <includes>.*</includes>
+        </database>
+
+        <generate>
+            <daos>true</daos>
+            <pojos>true</pojos>
+        </generate>
+
+        <strategy>
+            <name>com.serinus.loto.utils.CustomJooqGeneratorStrategy</name>
+        </strategy>
+
+        <target>
+            <packageName>com.serinus.loto.model.jooq</packageName>
+            <directory>app/</directory>
+        </target>
+    </generator>
+
+</configuration>
