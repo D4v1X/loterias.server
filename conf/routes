@@ -3,3 +3,4 @@
 # ~~~~
 
 GET        /hello        com.serinus.loto.controllers.TestController.test
+GET        /once         com.serinus.loto.controllers.TestController.testCuponazo

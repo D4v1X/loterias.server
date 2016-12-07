@@ -6,7 +6,8 @@ import com.serinus.loto.model.caseclasses._
 import com.serinus.loto.services.TestService
 import play.api.libs.json.Json
 import play.api.mvc._
-import scala.concurrent.ExecutionContext
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class TestController @Inject()
   (testService: TestService)
@@ -22,6 +23,16 @@ class TestController @Inject()
       Ok(Json.toJson(TmLotteryCC.fromPojo(tmLottery)))
 
     }
+  }
+
+
+  def testCuponazo = Action.async {
+
+    testService.testCuponazoParser
+    Future {
+      Ok("")
+    }
+
   }
 
 }
