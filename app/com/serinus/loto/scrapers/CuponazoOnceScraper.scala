@@ -1,95 +1,127 @@
 package com.serinus.loto.scrapers
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
-import com.serinus.loto.model.jooq.Tables
-import com.serinus.loto.model.pojos.TwResult
+import com.serinus.loto.services.LotteryService
 import com.serinus.loto.utils.{Constants, DB}
 import org.jsoup.nodes.Document
+import play.api.Logger
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class CuponazoOnceScraper @Inject() (db: DB) extends GenericScraper {
+class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) extends GenericScraper {
 
   override protected val getDB: DB = db
 
-  override protected val url: String = "https://www.juegosonce.es/resultados-cuponazo"
 
-  override protected def twResultParser: (Document) => Future[Seq[TwResult]] = { doc =>
+  override protected val lotteryUrl: String = "https://www.juegosonce.es/resultados-cuponazo"
 
-    val resultRecordsLst = for {
 
-      // winning number
-      partCombGanadoraId <- getCuponazoCombinationPartIdWithName(
-        Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA)
+  override protected def twResultParser: (Document) => Future[Either[ScrapError, Seq[ScrapResult]]] = { doc =>
 
-      // serie
-      partCombGanadoraSerieId <- getCuponazoCombinationPartIdWithName(
-        Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA_SERIE)
+    Logger.debug("Starting Cuponazo Once scraper")
 
-      // reintegro
-      partCombGanadoraReintId <- getCuponazoCombinationPartIdWithName(
-        Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA_REINT)
+    if (todaysRaffleResultAvailable(doc)) {
+      for {
 
-    } yield {
+        // winning number
+        partCombGanadoraId <- lotteryService.getCuponazoCombinationPartIdWithName(
+          Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA)
 
-      var results = new ListBuffer[TwResult]()
-      val raffleDay = LocalDate.now()
+        // serie
+        partCombGanadoraSerieId <- lotteryService.getCuponazoCombinationPartIdWithName(
+          Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA_SERIE)
 
-      val combGanadoraValue = parseCombinacionGanadora(doc)
-      results += new TwResult(null, raffleDay, partCombGanadoraId, combGanadoraValue, null)
+        // reintegro
+        partCombGanadoraReintId <- lotteryService.getCuponazoCombinationPartIdWithName(
+          Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA_REINT)
 
-      val serieCombGanadora = parseSerieCombGanadora(doc)
-      results += new TwResult(null, raffleDay, partCombGanadoraSerieId, serieCombGanadora, null)
+      } yield {
 
-      val reintCombGanadora = parseReintCombGanadora(doc)
-      results += new TwResult(null, raffleDay, partCombGanadoraReintId, reintCombGanadora, null)
+        var results = new ListBuffer[ScrapResult]()
+        val raffleDay = LocalDate.now()
+
+        val combGanadoraValue = parseCombinacionGanadora(doc)
+        results += ((raffleDay, partCombGanadoraId, combGanadoraValue))
+
+        val serieCombGanadora = parseSerieCombGanadora(doc)
+        results += ((raffleDay, partCombGanadoraSerieId, serieCombGanadora))
+
+        val reintCombGanadora = parseReintCombGanadora(doc)
+        results += ((raffleDay, partCombGanadoraReintId, reintCombGanadora))
+
+        Right(results)
+
+      }
+    } else {
+
+      Future(Left("There is no raffle result yet for Cuponazo Once"))
 
     }
-
-    resultRecordsLst
-
   }
 
 
-  private def parseCombinacionGanadora(doc: Document): String = {
+  /**
+    * Checks if the raffle result is available at the time of scraping
+    * @param doc The Jsoup HTML document
+    * @return True if the raffle result is available or False otherwise
+    */
+  private def todaysRaffleResultAvailable(doc: Document): Boolean = {
+    val raffleDayString = doc.select(".escrutinio span:eq(1)").first().html()
+
+    val parsedDateTime = DateTimeFormatter
+      .ofPattern("EEEE, d 'de' MMMM 'de' uuuu")
+      .withLocale(new Locale(Constants.SPANISH_LOCALE_CODE))
+      .parse(raffleDayString)
+
+    LocalDate.from(parsedDateTime) == LocalDate.now()
+  }
+
+
+  /**
+    * Parses the winning number
+    * @param doc the Jsoup HTML document
+    * @return the ResultValue containing the winning number
+    */
+  private def parseCombinacionGanadora(doc: Document): ResultValue = {
+    Logger.debug("Parsing the winning number from the HTML document")
+
     val number = doc.select(".numerocupon").first().html()
 
     number.toArray.mkString(",")
   }
 
 
-  private def parseSerieCombGanadora(doc: Document): String = {
+  /**
+    * Parses the series for the winning number
+    * @param doc the Jsoup HTML document
+    * @return the ResultValue containing the series
+    */
+  private def parseSerieCombGanadora(doc: Document): ResultValue = {
+    Logger.debug("Parsing the winning number series from the HTML document")
+
     val textWithSerie = doc.select(".numerocupon").first().parent().parent().text()
 
     textWithSerie.substring(textWithSerie.lastIndexOf(":") + 1).trim
   }
 
 
-  private def parseReintCombGanadora(doc: Document): String = {
+  /**
+    * Parses the "Reintegro" for the winning number
+    * @param doc the Jsoup HTML document
+    * @return the ResultValue containing the "Reintegro"
+    */
+  private def parseReintCombGanadora(doc: Document): ResultValue = {
+    Logger.debug("Parsing the winning number Reintegro from the HTML document")
+
     val number = doc.select(".numerocupon").first().html()
 
     number.reverse.substring(0, 1)
-  }
-
-
-  private def getCuponazoCombinationPartIdWithName(name: String) = {
-    db.query { db =>
-
-      val tmCombPartCuponazoCombGanadora = db
-        .select(Tables.TM_COMBINATION_PART.ID)
-        .from(Tables.TM_COMBINATION_PART)
-        .innerJoin(Tables.TM_LOTTERY).on(Tables.TM_LOTTERY.ID.eq(Tables.TM_COMBINATION_PART.LOTTERY_ID))
-        .where(Tables.TM_LOTTERY.NAME.eq(Constants.TM_LOTTERY_CUPONAZO_ONCE_NAME))
-        .and(Tables.TM_COMBINATION_PART.NAME.eq(name))
-        .fetchOne().value1()
-
-      tmCombPartCuponazoCombGanadora
-
-    }
   }
 
 }
