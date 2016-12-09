@@ -2,8 +2,9 @@ package com.serinus.loto.scrapers
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 
+import akka.actor.Actor
 import com.serinus.loto.services.LotteryService
 import com.serinus.loto.utils.{Constants, DB}
 import org.jsoup.nodes.Document
@@ -14,7 +15,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) extends GenericScraper {
+@Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME)
+class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) extends Actor with GenericScraper {
+
+
+  def receive = {
+    case Constants.SCHEDULER_MSG_SCRAP_CUPONAZO_ONCE => run
+  }
+
 
   override protected val getDB: DB = db
 

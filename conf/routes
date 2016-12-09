@@ -2,5 +2,5 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET        /hello        com.serinus.loto.controllers.TestController.test
-GET        /once         com.serinus.loto.controllers.TestController.testCuponazo
+GET        /hello                 com.serinus.loto.controllers.TestController.test
+GET        /scrap/cuponazo        com.serinus.loto.controllers.TestController.testCuponazo

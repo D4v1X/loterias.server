@@ -1,13 +1,15 @@
 package com.serinus.loto.services
 
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 
+import akka.actor.ActorRef
 import com.serinus.loto.model.jooq.Tables._
 import com.serinus.loto.model.pojos._
-import com.serinus.loto.scrapers.CuponazoOnceScraper
-import com.serinus.loto.utils.DB
+import com.serinus.loto.utils.{Constants, DB}
 
-class TestService @Inject() (db: DB, cuponazoOnceScraper: CuponazoOnceScraper) {
+class TestService @Inject()
+  (db: DB)
+  (@Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME) cuponazoOnceScaper: ActorRef) {
 
 
   def hello = {
@@ -19,7 +21,7 @@ class TestService @Inject() (db: DB, cuponazoOnceScraper: CuponazoOnceScraper) {
   }
 
   def testCuponazoParser = {
-    cuponazoOnceScraper.run
+    cuponazoOnceScaper ! Constants.SCHEDULER_MSG_SCRAP_CUPONAZO_ONCE
   }
 
 
