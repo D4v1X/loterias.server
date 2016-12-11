@@ -60,4 +60,13 @@ class TestController @Inject()
 
   }
 
+  def testPrimitiva = Action.async {
+
+    testService.testPrimitivaParser
+    Future {
+      Ok("")
+    }
+
+  }
+
 }

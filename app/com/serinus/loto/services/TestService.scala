@@ -4,10 +4,12 @@ import javax.inject.Inject
 
 import com.serinus.loto.model.jooq.Tables._
 import com.serinus.loto.model.pojos._
-import com.serinus.loto.scrapers.CuponazoOnceScraper
+import com.serinus.loto.scrapers.{CuponazoOnceScraper, PrimitivaScraper}
 import com.serinus.loto.utils.DB
 
-class TestService @Inject() (db: DB, cuponazoOnceScraper: CuponazoOnceScraper) {
+class TestService @Inject() (db: DB,
+                             cuponazoOnceScraper: CuponazoOnceScraper,
+                             primitivaScraper: PrimitivaScraper) {
 
 
   def hello = {
@@ -20,6 +22,10 @@ class TestService @Inject() (db: DB, cuponazoOnceScraper: CuponazoOnceScraper) {
 
   def testCuponazoParser = {
     cuponazoOnceScraper.run
+  }
+
+  def testPrimitivaParser = {
+    primitivaScraper.run
   }
 
   def testLottery = {

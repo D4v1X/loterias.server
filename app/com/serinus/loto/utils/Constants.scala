@@ -29,5 +29,14 @@ object Constants {
   val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_6 = "Número Adicional 6"
   val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_6_SERIE = "Serie Número Adicional 6"
 
+  //
+  // LA PRIMITIVA
+  //
+  val TM_LOTTERY_PRIMITIVA_NAME = "La Primitiva"
+
+  val TM_COMB_PART_PRIMITIVA_COMB_NAME = "Combinación ganadora"
+  val TM_COMB_PART_PRIMITIVA_COMPL_NAME = "Complementario"
+  val TM_COMB_PART_PRIMITIVA_REINT_NAME = "Reintegro"
+  val TM_COMB_PART_PRIMITIVA_JOKER_NAME = "Joker"
 
 }
