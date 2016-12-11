@@ -15,6 +15,8 @@ class TestController @Inject()
 
 
   implicit val tmLotteryWrites = Json.writes[TmLotteryCC]
+  implicit val tmCombinationWrites = Json.writes[TmCombinationPartCC]
+  implicit val twResultWrites = Json.writes[TwResultCC]
 
 
   def test = Action.async {
@@ -25,6 +27,29 @@ class TestController @Inject()
     }
   }
 
+  def testLottery = Action.async {
+    testService.testLottery.map { tmLotteryList =>
+
+      Ok(Json.toJson(TmLotteryCC.fromPojoList(tmLotteryList)))
+
+    }
+  }
+
+  def testCombination = Action.async {
+    testService.testCombination.map { tmCombinationList =>
+
+      Ok(Json.toJson(TmCombinationPartCC.fromPojoList(tmCombinationList)))
+
+    }
+  }
+
+  def testResult = Action.async {
+    testService.testResult.map { twResultList =>
+
+      Ok(Json.toJson(TwResultCC.fromPojoList(twResultList)))
+
+    }
+  }
 
   def testCuponazo = Action.async {
 

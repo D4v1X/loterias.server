@@ -22,5 +22,29 @@ class TestService @Inject() (db: DB, cuponazoOnceScraper: CuponazoOnceScraper) {
     cuponazoOnceScraper.run
   }
 
+  def testLottery = {
+    db.query { db =>
+
+      db.selectFrom(TM_LOTTERY).fetchInto(classOf[TmLottery])
+
+    }
+  }
+
+  def testCombination = {
+    db.query { db =>
+
+      db.selectFrom(TM_COMBINATION_PART).fetchInto(classOf[TmCombinationPart])
+
+    }
+  }
+
+  def testResult = {
+    db.query { db =>
+
+      db.selectFrom(TW_RESULT).fetchInto(classOf[TwResult])
+
+    }
+  }
+
 
 }
