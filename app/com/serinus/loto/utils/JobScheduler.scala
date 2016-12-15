@@ -3,22 +3,17 @@ package com.serinus.loto.utils
 import javax.inject.{Inject, Named}
 
 import akka.actor.{ActorRef, ActorSystem}
+import com.serinus.loto.scrapers.ScraperMessages
+import com.typesafe.akka.extension.quartz.QuartzSchedulerExtension
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.duration._
+class JobScheduler @Inject()
+  (system: ActorSystem)
+  (@Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME) cuponazoOnceScaper: ActorRef) {
 
-class JobScheduler @Inject() (system: ActorSystem, db: DB)
-  (@Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME) cuponazoOnceScaper: ActorRef)
-  (implicit ec: ExecutionContext) {
+  // At long last! a scheduler using CRON expressions
+  val scheduler = QuartzSchedulerExtension(system)
 
-
-  // execute Cuponazo scraper every day at midnight
-  system.scheduler.schedule(
-    Duration(0, MILLISECONDS),
-    Duration(24, HOURS),
-    cuponazoOnceScaper,
-    Constants.SCHEDULER_MSG_SCRAP_CUPONAZO_ONCE
-  )
-
+  // declare here any scrapers with their scheduled expression name and the message to send to them
+  scheduler.schedule("CuponazoScrapSchedule", cuponazoOnceScaper, ScraperMessages.ScrapCuponazo)
 
 }

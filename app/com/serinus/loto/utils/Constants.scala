@@ -35,6 +35,4 @@ object Constants {
   // Actor names
   final val CUPONAZO_ONCE_SCRAPER_NAME = "CUPONAZO_ONCE_SCRAPER_ACTOR"
 
-  // Scheduler messages
-  final val SCHEDULER_MSG_SCRAP_CUPONAZO_ONCE = "SCRAP_CUPONAZO_ONCE"
 }

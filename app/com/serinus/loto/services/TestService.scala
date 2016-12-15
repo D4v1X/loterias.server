@@ -5,6 +5,7 @@ import javax.inject.{Inject, Named}
 import akka.actor.ActorRef
 import com.serinus.loto.model.jooq.Tables._
 import com.serinus.loto.model.pojos._
+import com.serinus.loto.scrapers.ScraperMessages
 import com.serinus.loto.utils.{Constants, DB}
 
 class TestService @Inject()
@@ -21,7 +22,7 @@ class TestService @Inject()
   }
 
   def testCuponazoParser = {
-    cuponazoOnceScaper ! Constants.SCHEDULER_MSG_SCRAP_CUPONAZO_ONCE
+    cuponazoOnceScaper ! ScraperMessages.ScrapCuponazo
   }
 
 

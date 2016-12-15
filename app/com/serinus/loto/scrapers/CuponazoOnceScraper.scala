@@ -15,12 +15,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
+
 @Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME)
 class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) extends Actor with GenericScraper {
 
 
-  def receive = {
-    case Constants.SCHEDULER_MSG_SCRAP_CUPONAZO_ONCE => run
+  def receive: PartialFunction[Any, Unit] = {
+    case ScraperMessages.ScrapCuponazo => run
   }
 
 
@@ -115,7 +116,7 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
 
     val textWithSerie = doc.select(".numerocupon").first().parent().parent().text()
 
-    textWithSerie.substring(textWithSerie.lastIndexOf(":") + 1).trim
+    textWithSerie.substring(textWithSerie.lastIndexOf(":") + 1).trim()
   }
 
 
