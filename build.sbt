@@ -8,13 +8,13 @@ scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
   jdbc,
-  cache,
   ws,
-  "org.postgresql"       % "postgresql"               %  "9.4.1209"  withSources() withJavadoc(),
-  "org.jooq"             % "jooq"                     %  "3.8.6"     withSources() withJavadoc(),
-  "org.jooq"             % "jooq-meta"                %  "3.8.6"     withSources() withJavadoc(),
-  "org.jooq"             % "jooq-codegen"             %  "3.8.6"     withSources() withJavadoc(),
-  "org.jsoup"            % "jsoup"                    %  "1.10.1"    withSources() withJavadoc()
+  "org.postgresql"       %  "postgresql"               %  "9.4.1209"  withSources() withJavadoc(),
+  "org.jooq"             %  "jooq"                     %  "3.8.6"     withSources() withJavadoc(),
+  "org.jooq"             %  "jooq-meta"                %  "3.8.6"     withSources() withJavadoc(),
+  "org.jooq"             %  "jooq-codegen"             %  "3.8.6"     withSources() withJavadoc(),
+  "org.jsoup"            %  "jsoup"                    %  "1.10.1"    withSources() withJavadoc(),
+  "com.enragedginger"    %% "akka-quartz-scheduler"    %  "1.6.0-akka-2.4.x" withSources() withJavadoc()
 )
 
 

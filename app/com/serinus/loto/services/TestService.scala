@@ -1,15 +1,17 @@
 package com.serinus.loto.services
 
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 
+import akka.actor.ActorRef
 import com.serinus.loto.model.jooq.Tables._
 import com.serinus.loto.model.pojos._
-import com.serinus.loto.scrapers.{CuponazoOnceScraper, PrimitivaScraper}
+import com.serinus.loto.utils.Constants
+import com.serinus.loto.scrapers.{PrimitivaScraper, ScraperMessages}
 import com.serinus.loto.utils.DB
 
 class TestService @Inject() (db: DB,
-                             cuponazoOnceScraper: CuponazoOnceScraper,
-                             primitivaScraper: PrimitivaScraper) {
+                             @Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME) cuponazoOnceScaper: ActorRef,
+                             @Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME) primitivaScraper: ActorRef) {
 
 
   def hello = {
@@ -20,13 +22,16 @@ class TestService @Inject() (db: DB,
     }
   }
 
+
   def testCuponazoParser = {
-    cuponazoOnceScraper.run
+    cuponazoOnceScaper ! ScraperMessages.ScrapCuponazo
   }
 
+
   def testPrimitivaParser = {
-    primitivaScraper.run
+    primitivaScraper ! ScraperMessages.ScrapPrimitiva
   }
+
 
   def testLottery = {
     db.query { db =>
@@ -36,6 +41,7 @@ class TestService @Inject() (db: DB,
     }
   }
 
+
   def testCombination = {
     db.query { db =>
 
@@ -43,6 +49,7 @@ class TestService @Inject() (db: DB,
 
     }
   }
+
 
   def testResult = {
     db.query { db =>
