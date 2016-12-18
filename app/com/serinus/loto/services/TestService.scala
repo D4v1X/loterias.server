@@ -13,7 +13,8 @@ class TestService @Inject()(db: DB,
                             @Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME) cuponazoOnceScaper: ActorRef,
                             @Named(Constants.PRIMITIVA_SCRAPER_NAME) primitivaScraper: ActorRef,
                             @Named(Constants.BONOLOTO_SCRAPER_NAME) bonolotoScraper: ActorRef,
-                            @Named(Constants.GORDO_SCRAPER_NAME) gordoScraper: ActorRef) {
+                            @Named(Constants.GORDO_SCRAPER_NAME) gordoScraper: ActorRef,
+                            @Named(Constants.LOTOTURF_SCRAPER_NAME) lototurfScraper: ActorRef) {
 
 
   def hello = {
@@ -45,6 +46,10 @@ class TestService @Inject()(db: DB,
   }
 
 
+  def testLototurfParser = {
+    lototurfScraper ! ScraperMessages.ScrapLototurf
+  }
+
   def testLottery = {
     db.query { db =>
 
@@ -70,6 +75,5 @@ class TestService @Inject()(db: DB,
 
     }
   }
-
 
 }

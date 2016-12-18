@@ -9,6 +9,10 @@ import scala.concurrent.Future
 
 class LotteryService @Inject() (db: DB) {
 
+  def getLototurfCombinationPartIdWithName(name: String) = {
+    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_LOTOTURF_NAME, name)
+  }
+
   def getGordoCombinationPartIdWithName(name: String) = {
     getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_GORDO_NAME, name)
   }

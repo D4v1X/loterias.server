@@ -87,4 +87,13 @@ class TestController @Inject()
 
   }
 
+  def testLototurf = Action.async {
+
+    testService.testLototurfParser
+    Future {
+      Ok("")
+    }
+
+  }
+
 }

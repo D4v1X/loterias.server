@@ -11,7 +11,8 @@ class JobScheduler @Inject()
   (@Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME) cuponazoOnceScaper: ActorRef)
   (@Named(Constants.PRIMITIVA_SCRAPER_NAME) primitivaScaper: ActorRef)
   (@Named(Constants.PRIMITIVA_SCRAPER_NAME) bonolotoScraper: ActorRef)
-  (@Named(Constants.GORDO_SCRAPER_NAME) gordoScraper: ActorRef){
+  (@Named(Constants.GORDO_SCRAPER_NAME) gordoScraper: ActorRef)
+  (@Named(Constants.LOTOTURF_SCRAPER_NAME) lototurfScraper: ActorRef){
 
 
   // At long last! a scheduler using CRON expressions
@@ -23,5 +24,6 @@ class JobScheduler @Inject()
   scheduler.schedule("PrimitivaScrapSchedule", primitivaScaper, ScraperMessages.ScrapPrimitiva)
   scheduler.schedule("BonolotoScrapSchedule", bonolotoScraper, ScraperMessages.ScrapBonoloto)
   scheduler.schedule("GordoScrapSchedule", bonolotoScraper, ScraperMessages.ScrapBonoloto)
+  scheduler.schedule("LototurfScrapSchedule", lototurfScraper, ScraperMessages.ScrapLototurf)
 
 }

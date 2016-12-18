@@ -8,5 +8,6 @@ object ScraperMessages {
   case object ScrapPrimitiva extends ActorMessage
   case object ScrapBonoloto extends ActorMessage
   case object ScrapGordo extends ActorMessage
+  case object ScrapLototurf extends ActorMessage
 
 }

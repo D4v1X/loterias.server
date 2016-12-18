@@ -16,6 +16,7 @@ object Constants {
   final val PRIMITIVA_SCRAPER_NAME = "PRIMITIVA_SCRAPER_ACTOR"
   final val BONOLOTO_SCRAPER_NAME = "BONOLOTO_SCRAPER_ACTOR"
   final val GORDO_SCRAPER_NAME = "GORDO_SCRAPER_NAME"
+  final val LOTOTURF_SCRAPER_NAME = "LOTOTURF_SCRAPER_NAME"
 
 
   //
@@ -61,5 +62,13 @@ object Constants {
   val TM_LOTTERY_GORDO_NAME = "El Gordo de La Primitiva"
   val TM_COMB_PART_GORDO_COMB_NAME = "Combinación ganadora"
   val TM_COMB_PART_GORDO_REINT_NAME = "Reintegro"
+
+  //
+  // LOTOTURF
+  //
+  val TM_LOTTERY_LOTOTURF_NAME = "Lototurf"
+  val TM_COMB_PART_LOTOTURF_COMB_NAME = "Combinación ganadora"
+  val TM_COMB_PART_LOTOTURF_CABALLO_NAME = "Caballo"
+  val TM_COMB_PART_LOTOTURF_REINT_NAME = "Reintegro"
 
 }
