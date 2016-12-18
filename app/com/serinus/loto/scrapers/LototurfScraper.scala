@@ -104,8 +104,13 @@ class LototurfScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
     * @param doc the Jsoup HTML document
     * @return the ResultValue containing the winning number
     */
-  def parseCombinacionGanadora(doc: Document): ResultValue =
-    doc.getElementsByClass("cuerpoRegionIzq").first().getElementsByTag("li").text().replace(" ", ",")
+  def parseCombinacionGanadora(doc: Document): ResultValue ={
+    Logger.debug("Parsing the winning number from the HTML document")
+
+    val combinacionGanadora = doc.getElementsByClass("cuerpoRegionIzq").first().getElementsByTag("li").text()
+
+    combinacionGanadora.replace(" ", ",")
+  }
 
   /**
     * Parses the "Caballo" for the winning number
@@ -113,8 +118,11 @@ class LototurfScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
     * @param doc the Jsoup HTML document
     * @return the ResultValue containing the "Caballo"
     */
-  def parseCaballoCombGanadora(doc: Document): ResultValue =
+  def parseCaballoCombGanadora(doc: Document): ResultValue ={
+    Logger.debug("Parsing the winning number Caballo from the HTML document")
+
     doc.getElementsByClass("cuerpoRegionDerecha").first().getElementsByClass("bolaPeq").first().text()
+  }
 
   /**
     * Parses the "Reintegro" for the winning number
@@ -122,7 +130,10 @@ class LototurfScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
     * @param doc the Jsoup HTML document
     * @return the ResultValue containing the "Reintegro"
     */
-  def parseReintCombGanadora(doc: Document): ResultValue =
+  def parseReintCombGanadora(doc: Document): ResultValue = {
+    Logger.debug("Parsing the winning number Reintegro from the HTML document")
+
     doc.getElementsByClass("cuerpoRegionDerecha").first().getElementsByClass("bolaPeq").last().text()
+  }
 
 }
