@@ -10,3 +10,5 @@ GET        /test/result             com.serinus.loto.controllers.TestController.
 GET        /once                    com.serinus.loto.controllers.TestController.testCuponazo
 
 GET        /primitiva               com.serinus.loto.controllers.TestController.testPrimitiva
+
+GET        /bonoloto                com.serinus.loto.controllers.TestController.testBonoloto

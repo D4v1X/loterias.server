@@ -11,6 +11,12 @@ object Constants {
   final val JOOQ_POJOS_DEFAULT_PACKAGE_SUFFIX = "pojos"
 
 
+  // Actor names
+  final val CUPONAZO_ONCE_SCRAPER_NAME = "CUPONAZO_ONCE_SCRAPER_ACTOR"
+  final val PRIMITIVA_SCRAPER_NAME = "PRIMITIVA_SCRAPER_ACTOR"
+  final val BONOLOTO_SCRAPER_NAME = "BONOLOTO_SCRAPER_ACTOR"
+
+
   //
   // CUPONAZO ONCE
   //
@@ -31,20 +37,21 @@ object Constants {
   final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_6 = "Número Adicional 6"
   final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_6_SERIE = "Serie Número Adicional 6"
 
-
   //
   // LA PRIMITIVA
   //
-  val TM_LOTTERY_PRIMITIVA_NAME = "La Primitiva"
+  final val TM_LOTTERY_PRIMITIVA_NAME = "La Primitiva"
+  final val TM_COMB_PART_PRIMITIVA_COMB_NAME = "Combinación ganadora"
+  final val TM_COMB_PART_PRIMITIVA_COMPL_NAME = "Complementario"
+  final val TM_COMB_PART_PRIMITIVA_REINT_NAME = "Reintegro"
+  final val TM_COMB_PART_PRIMITIVA_JOKER_NAME = "Joker"
 
-  val TM_COMB_PART_PRIMITIVA_COMB_NAME = "Combinación ganadora"
-  val TM_COMB_PART_PRIMITIVA_COMPL_NAME = "Complementario"
-  val TM_COMB_PART_PRIMITIVA_REINT_NAME = "Reintegro"
-  val TM_COMB_PART_PRIMITIVA_JOKER_NAME = "Joker"
-
-
-  // Actor names
-  final val CUPONAZO_ONCE_SCRAPER_NAME = "CUPONAZO_ONCE_SCRAPER_ACTOR"
-  final val PRIMITIVA_SCRAPER_NAME = "PRIMITIVA_SCRAPER_ACTOR"
+  //
+  // LA BONOLOTO
+  //
+  final val TM_LOTTERY_BONOLOTO_NAME = "Bonoloto"
+  final val TM_COMB_PART_BONOLOTO_COMB_NAME = "Combinación ganadora"
+  final val TM_COMB_PART_BONOLOTO_COMPL_NAME = "Complementario"
+  final val TM_COMB_PART_BONOLOTO_REINT_NAME = "Reintegro"
 
 }

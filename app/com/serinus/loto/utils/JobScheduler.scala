@@ -9,7 +9,8 @@ import com.typesafe.akka.extension.quartz.QuartzSchedulerExtension
 class JobScheduler @Inject()
   (system: ActorSystem)
   (@Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME) cuponazoOnceScaper: ActorRef)
-  (@Named(Constants.PRIMITIVA_SCRAPER_NAME) primitivaScaper: ActorRef) {
+  (@Named(Constants.PRIMITIVA_SCRAPER_NAME) primitivaScaper: ActorRef)
+  (@Named(Constants.PRIMITIVA_SCRAPER_NAME) bonolotoScraper: ActorRef){
 
 
   // At long last! a scheduler using CRON expressions
@@ -19,5 +20,6 @@ class JobScheduler @Inject()
   // declare here any scrapers with their scheduled expression name and the message to send to them
   scheduler.schedule("CuponazoScrapSchedule", cuponazoOnceScaper, ScraperMessages.ScrapCuponazo)
   scheduler.schedule("PrimitivaScrapSchedule", primitivaScaper, ScraperMessages.ScrapPrimitiva)
+  scheduler.schedule("BonolotoScrapSchedule", bonolotoScraper, ScraperMessages.ScrapBonoloto)
 
 }
