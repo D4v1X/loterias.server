@@ -107,33 +107,52 @@ class PrimitivaScraper @Inject() (db: DB, lotteryService: LotteryService) extend
 
   /**
     * Parses the winning number
+    *
     * @param doc the Jsoup HTML document
     * @return the ResultValue containing the winning number
     */
-  def parseCombinacionGanadora(doc: Document): ResultValue =
-    doc.getElementsByClass("cuerpoRegionIzq").first().getElementsByTag("li").text().replace(" ", ",")
+  def parseCombinacionGanadora(doc: Document): ResultValue ={
+    Logger.debug("Parsing the winning number from the HTML document")
+
+    val combinacionGanadora = doc.getElementsByClass("cuerpoRegionIzq").first().getElementsByTag("li").text()
+
+    combinacionGanadora.replace(" ", ",")
+  }
 
   /**
     * Parses the "Complementario" for the winning number
+    *
     * @param doc the Jsoup HTML document
     * @return the ResultValue containing the "Complementario"
     */
-  def parseComplementarioCombGanadora(doc: Document): ResultValue =
+  def parseComplementarioCombGanadora(doc: Document): ResultValue = {
+    Logger.debug("Parsing the winning number Complementario from the HTML document")
+
     doc.getElementsByClass("cuerpoRegionDerecha").first().getElementsByClass("bolaPeq").first().text()
+  }
 
   /**
     * Parses the "Reintegro" for the winning number
+    *
     * @param doc the Jsoup HTML document
     * @return the ResultValue containing the "Reintegro"
     */
-  def parseReintCombGanadora(doc: Document): ResultValue =
+  def parseReintCombGanadora(doc: Document): ResultValue = {
+    Logger.debug("Parsing the winning number Reintegro from the HTML document")
+
     doc.getElementsByClass("cuerpoRegionDerecha").first().getElementsByClass("bolaPeq").last().text()
+  }
 
   /**
     * Parses the Joker for the winning number
     * @param doc the Jsoup HTML document
     * @return the ResultValue containing the Joker
     */
-  def parseJokerCombGanadora(doc: Document): ResultValue =
-    doc.getElementsByClass("joker").first().text().replace(" ", "")
+  def parseJokerCombGanadora(doc: Document): ResultValue = {
+    Logger.debug("Parsing the winning number Joker from the HTML document")
+
+    val joker = doc.getElementsByClass("joker").first().text()
+
+    joker.replace(" ", "")
+  }
 }
