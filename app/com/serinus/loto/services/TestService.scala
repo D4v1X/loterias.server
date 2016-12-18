@@ -12,7 +12,8 @@ import com.serinus.loto.utils.DB
 class TestService @Inject()(db: DB,
                             @Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME) cuponazoOnceScaper: ActorRef,
                             @Named(Constants.PRIMITIVA_SCRAPER_NAME) primitivaScraper: ActorRef,
-                            @Named(Constants.BONOLOTO_SCRAPER_NAME) bonolotoScraper: ActorRef) {
+                            @Named(Constants.BONOLOTO_SCRAPER_NAME) bonolotoScraper: ActorRef,
+                            @Named(Constants.GORDO_SCRAPER_NAME) gordoScraper: ActorRef) {
 
 
   def hello = {
@@ -36,6 +37,11 @@ class TestService @Inject()(db: DB,
 
   def testBonolotoParser = {
     bonolotoScraper ! ScraperMessages.ScrapBonoloto
+  }
+
+
+  def testGordoParser = {
+    gordoScraper ! ScraperMessages.ScrapGordo
   }
 
 

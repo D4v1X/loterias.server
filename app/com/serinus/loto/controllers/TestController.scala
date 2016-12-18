@@ -78,4 +78,13 @@ class TestController @Inject()
 
   }
 
+  def testGordo = Action.async {
+
+    testService.testGordoParser
+    Future {
+      Ok("")
+    }
+
+  }
+
 }

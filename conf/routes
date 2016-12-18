@@ -12,3 +12,5 @@ GET        /once                    com.serinus.loto.controllers.TestController.
 GET        /primitiva               com.serinus.loto.controllers.TestController.testPrimitiva
 
 GET        /bonoloto                com.serinus.loto.controllers.TestController.testBonoloto
+
+GET        /gordo                   com.serinus.loto.controllers.TestController.testGordo
