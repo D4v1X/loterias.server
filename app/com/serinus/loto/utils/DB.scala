@@ -12,22 +12,28 @@ import scala.concurrent.{ExecutionContext, Future}
 class DB @Inject() (db: Database, system: ActorSystem) {
 
 
-  val databaseContext: ExecutionContext = system.dispatchers.lookup("contexts.database")
+  implicit val databaseContext: ExecutionContext = system.dispatchers.lookup("contexts.database")
 
 
-  def query[A](block: DSLContext => A): Future[A] = Future {
+  def query[A](queryFn: DSLContext => A): Future[A] = Future {
     db.withConnection { connection =>
-      val sql = DSL.using(connection, SQLDialect.POSTGRES_9_5)
-      block(sql)
+
+      val dslCtxt = DSL.using(connection, SQLDialect.POSTGRES)
+
+      queryFn apply dslCtxt
+
     }
-  }(databaseContext)
+  }
 
 
-  def withTransaction[A](block: DSLContext => A): Future[A] = Future {
+  def withTransaction[A](queryFn: DSLContext => A): Future[A] = Future {
     db.withTransaction { connection =>
-      val sql = DSL.using(connection, SQLDialect.POSTGRES_9_5)
-      block(sql)
+
+      val dslCtxt = DSL.using(connection, SQLDialect.POSTGRES)
+
+      queryFn apply dslCtxt
+
     }
-  }(databaseContext)
+  }
 
 }

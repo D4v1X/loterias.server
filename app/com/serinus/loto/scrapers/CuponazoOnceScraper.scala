@@ -33,47 +33,70 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
 
 
   override protected def twResultParser: (Document) => Future[Either[ScrapError, Seq[ScrapResult]]] = { doc =>
-
     Logger.debug("Starting Cuponazo Once scraper")
 
     if (todaysRaffleResultAvailable(doc)) {
-      for {
 
-        // winning number
-        partCombGanadoraId <- lotteryService.getCuponazoCombinationPartIdWithName(
-          Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA)
+      val listFutureIds = getCombinationPartNames map lotteryService.getCuponazoCombinationPartIdWithName
 
-        // serie
-        partCombGanadoraSerieId <- lotteryService.getCuponazoCombinationPartIdWithName(
-          Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA_SERIE)
+      val futureIdList = Future.fold(listFutureIds)(ListBuffer.empty: ListBuffer[Integer])(_ += _)
 
-        // reintegro
-        partCombGanadoraReintId <- lotteryService.getCuponazoCombinationPartIdWithName(
-          Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA_REINT)
-
-      } yield {
-
-        var results = new ListBuffer[ScrapResult]()
-        val raffleDay = LocalDate.now()
-
-        val combGanadoraValue = parseCombinacionGanadora(doc)
-        results += ((raffleDay, partCombGanadoraId, combGanadoraValue))
-
-        val serieCombGanadora = parseSerieCombGanadora(doc)
-        results += ((raffleDay, partCombGanadoraSerieId, serieCombGanadora))
-
-        val reintCombGanadora = parseReintCombGanadora(doc)
-        results += ((raffleDay, partCombGanadoraReintId, reintCombGanadora))
-
-        Right(results)
-
+      futureIdList map { combPartIds =>
+        Right(generateCuponazoResults(doc, combPartIds))
+      } recover {
+        case e => Left(s"There's been an error trying to retrive the cuponazo raffle results: ${e.getMessage}")
       }
+
     } else {
 
       Future(Left("There is no raffle result yet for Cuponazo Once"))
 
     }
   }
+
+
+  /**
+    * Generates the list of Cuponazo results
+    * @param doc the JSoup HTML document
+    * @param combPartIds the ordered list of TmCombinationPart identifiers for each one of the results associated with the Cuponazo
+    * @return the list of Cuponazo results
+    */
+  private def generateCuponazoResults(doc: Document,
+                                      combPartIds: Seq[Integer]): Seq[ScrapResult] = {
+    val raffleDay = LocalDate.now()
+
+    val firstWininngResults = List(parseCombinacionGanadora(doc), parseSerieCombGanadora(doc), parseReintCombGanadora(doc))
+
+    val cuponazoResults = firstWininngResults ++ parseAdditionalNumbersAndSeries(doc)
+
+    (combPartIds zip cuponazoResults).map(tuple => (raffleDay, tuple._1.toInt, tuple._2))
+  }
+
+
+  /**
+    * Delivers the ordered list of combination parts used in the Cuponazo
+    * @return List of strings containing the combination part names for the Cuponazo
+    */
+  private def getCombinationPartNames: List[String] = {
+    List(
+      Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA,
+      Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA_SERIE,
+      Constants.TM_COMB_PART_CUPONAZO_COMB_GANADORA_REINT,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_1,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_1_SERIE,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_2,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_2_SERIE,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_3,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_3_SERIE,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_4,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_4_SERIE,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_5,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_5_SERIE,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_6,
+      Constants.TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_6_SERIE
+    )
+  }
+
 
 
   /**
@@ -93,6 +116,7 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
   }
 
 
+
   /**
     * Parses the winning number
     * @param doc the Jsoup HTML document
@@ -105,6 +129,7 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
 
     number.toArray.mkString(",")
   }
+
 
 
   /**
@@ -121,6 +146,7 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
   }
 
 
+
   /**
     * Parses the "Reintegro" for the winning number
     * @param doc the Jsoup HTML document
@@ -132,6 +158,28 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
     val number = doc.select(".numerocupon").first().html()
 
     number.reverse.substring(0, 1)
+  }
+
+
+  /**
+    * Parses the additional winning numbers and series
+    * @param doc the JSoup HTML document
+    * @return the list of ResultValues corresponding with the additional numbers and series in order
+    */
+  private def parseAdditionalNumbersAndSeries(doc: Document): Seq[ResultValue] = {
+    Logger.debug("Parsing the additional winning numbers and series from the HTML document")
+
+    var additionalNumberAndSeries = ListBuffer[ResultValue]()
+
+    0 to 5 foreach(number => {
+      val additionalNumber = doc.select(s".columnas li:eq($number) .numero").html()
+      val additionalSerie = doc.select(s".columnas li:eq($number) .serie").html()
+
+      additionalNumberAndSeries += additionalNumber.toArray.mkString(",")
+      additionalNumberAndSeries += additionalSerie
+    })
+
+    additionalNumberAndSeries
   }
 
 }
