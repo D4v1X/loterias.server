@@ -65,9 +65,9 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
                                       combPartIds: Seq[Integer]): Seq[ScrapResult] = {
     val raffleDay = LocalDate.now()
 
-    val firstWininngResults = List(parseCombinacionGanadora(doc), parseSerieCombGanadora(doc), parseReintCombGanadora(doc))
+    val firstWinningResults = List(parseCombinacionGanadora(doc), parseSerieCombGanadora(doc), parseReintCombGanadora(doc))
 
-    val cuponazoResults = firstWininngResults ++ parseAdditionalNumbersAndSeries(doc)
+    val cuponazoResults = firstWinningResults ++ parseAdditionalNumbersAndSeries(doc)
 
     (combPartIds zip cuponazoResults).map(tuple => (raffleDay, tuple._1.toInt, tuple._2))
   }
