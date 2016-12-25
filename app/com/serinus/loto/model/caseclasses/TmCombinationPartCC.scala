@@ -1,10 +1,7 @@
 package com.serinus.loto.model.caseclasses
 
-import java.util
-
 import com.serinus.loto.model.pojos.TmCombinationPart
 
-import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.mutable.ListBuffer
 
 
@@ -17,10 +14,14 @@ case class TmCombinationPartCC(id : Int,
 
 object TmCombinationPartCC {
 
-  def fromPojoList(tmCombinationList: util.List[TmCombinationPart]): List[TmCombinationPartCC] = {
+  def fromPojoList(tmCombinationList: Seq[TmCombinationPart]): List[TmCombinationPartCC] = {
 
     val tmCombinationCCList = ListBuffer[TmCombinationPartCC]()
-    asScalaBuffer(tmCombinationList) foreach (tmCombinationPart => tmCombinationCCList += fromPojo(tmCombinationPart))
+
+    tmCombinationList foreach { tmCombinationPart =>
+       tmCombinationCCList += fromPojo(tmCombinationPart)
+    }
+
     tmCombinationCCList.toList
 
   }

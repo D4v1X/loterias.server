@@ -1,10 +1,7 @@
 package com.serinus.loto.model.caseclasses
 
-import java.util
-
 import com.serinus.loto.model.pojos.TmLottery
 
-import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.mutable.ListBuffer
 
 case class TmLotteryCC(id: Int,
@@ -13,10 +10,14 @@ case class TmLotteryCC(id: Int,
 
 object TmLotteryCC {
 
-  def fromPojoList(tmLotteryList: util.List[TmLottery]): List[TmLotteryCC] = {
+  def fromPojoList(tmLotteryList: Seq[TmLottery]): List[TmLotteryCC] = {
 
     val tmLotteryCCList = ListBuffer[TmLotteryCC]()
-    asScalaBuffer(tmLotteryList) foreach (tmLottery => tmLotteryCCList += fromPojo(tmLottery))
+
+    tmLotteryList foreach { tmLottery =>
+       tmLotteryCCList += fromPojo(tmLottery)
+    }
+
     tmLotteryCCList.toList
 
   }

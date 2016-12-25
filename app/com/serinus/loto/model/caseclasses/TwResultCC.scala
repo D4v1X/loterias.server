@@ -17,10 +17,14 @@ case class TwResultCC(id : Int,
 
 object TwResultCC {
 
-  def fromPojoList(twResultList: util.List[TwResult]): List[TwResultCC] = {
+  def fromPojoList(twResultList: Seq[TwResult]): List[TwResultCC] = {
 
     val twResultCCList = ListBuffer[TwResultCC]()
-    asScalaBuffer(twResultList) foreach (twResult => twResultCCList += fromPojo(twResult))
+
+    twResultList foreach { twResult =>
+      twResultCCList += fromPojo(twResult)
+    }
+
     twResultCCList.toList
 
   }

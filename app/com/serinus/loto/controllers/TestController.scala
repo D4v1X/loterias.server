@@ -7,6 +7,7 @@ import com.serinus.loto.services.TestService
 import play.api.libs.json.Json
 import play.api.mvc._
 
+import scala.collection.JavaConversions._
 import scala.concurrent.{ExecutionContext, Future}
 
 class TestController @Inject()
