@@ -8,6 +8,7 @@ GET        /test/combination        com.serinus.loto.controllers.TestController.
 GET        /test/result             com.serinus.loto.controllers.TestController.testResult
 
 GET        /once                    com.serinus.loto.controllers.TestController.testCuponazo
+GET        /once/historic           com.serinus.loto.controllers.TestController.testHistoricCuponazo
 
 GET        /primitiva               com.serinus.loto.controllers.TestController.testPrimitiva
 

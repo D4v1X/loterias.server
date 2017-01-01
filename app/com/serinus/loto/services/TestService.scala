@@ -1,5 +1,6 @@
 package com.serinus.loto.services
 
+import java.time.LocalDate
 import javax.inject.{Inject, Named}
 
 import akka.actor.ActorRef
@@ -28,6 +29,11 @@ class TestService @Inject()(db: DB,
 
   def testCuponazoParser = {
     cuponazoOnceScaper ! ScraperMessages.ScrapCuponazo
+  }
+
+
+  def testHistoricCuponazoParser = {
+    cuponazoOnceScaper ! ScraperMessages.ScrapHistoricCuponazo(Some(LocalDate.of(2012, 6, 8)), None)
   }
 
 

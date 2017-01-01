@@ -61,6 +61,15 @@ class TestController @Inject()
 
   }
 
+  def testHistoricCuponazo = Action.async {
+
+    testService.testHistoricCuponazoParser
+    Future {
+      Ok("")
+    }
+
+  }
+
   def testPrimitiva = Action.async {
 
     testService.testPrimitivaParser

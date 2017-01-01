@@ -1,6 +1,7 @@
 package com.serinus.loto.scrapers
 
-import java.time.LocalDate
+import java.net.URI
+import java.time.{DayOfWeek, LocalDate}
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.{Inject, Named}
@@ -26,7 +27,9 @@ class LototurfScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
   /**
     * URL for the lottery we want to scrap
     */
-  override protected val lotteryUrl: String = "http://www.loteriasyapuestas.es/es/lototurf"
+  override protected val lotteryUrl: RaffleDate => URI = _ =>
+    URI.create("http://www.loteriasyapuestas.es/es/lototurf")
+
   /**
     * Database connection
     */
@@ -37,10 +40,10 @@ class LototurfScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
     *
     * @return a future containing either an error (if something wrong happened) or a sequence of results
     */
-  override protected def twResultParser: (Document) => Future[Either[ScrapError, Seq[ScrapResult]]] = { doc =>
+  override protected def resultsParser(doc: Document, raffleDate: RaffleDate): Future[Either[ScrapError, ScrapResultList]] = {
     Logger.debug("Starting Lototurf scraper")
 
-    if (todaysRaffleResultAvailable(doc)) {
+    if (raffleResultAvailableForDate(doc, raffleDate)) {
       for {
 
         // Combinacion ganadora
@@ -84,9 +87,10 @@ class LototurfScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
     * Checks if the raffle result is available at the time of scraping
     *
     * @param doc The Jsoup HTML document
+    * @param raffleDate the date to check for results
     * @return True if the raffle result is available or False otherwise
     */
-  def todaysRaffleResultAvailable(doc: Document): Boolean = {
+  override protected def raffleResultAvailableForDate(doc: Document, raffleDate: RaffleDate): Boolean = {
     val datePattern = "\\d{2}\\/\\d{2}\\/\\d{4}".r
     val raffleDayString = datePattern.findFirstIn(doc.getElementById("lastResultsTitleLink").text()).get
 
@@ -136,4 +140,19 @@ class LototurfScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
     doc.getElementsByClass("cuerpoRegionDerecha").first().getElementsByClass("bolaPeq").last().text()
   }
 
+  /**
+    * URI for the historic lottery page
+    */
+  override protected val historicLotteryUrl: (RaffleDate) => URI = ???
+  /**
+    * Days when the lottery takes place
+    */
+  override protected val raffleWeekDays: Seq[DayOfWeek] = ???
+
+  /**
+    * Parses the HTML contained in the URI specified and extracts any possible historic results
+    *
+    * @return a future containing either an error (if something wrong happened) or a sequence of results
+    */
+  override protected def historicResultsParser(doc: Document, raffleDate: RaffleDate): Future[Either[ScrapError, ScrapResultList]] = ???
 }

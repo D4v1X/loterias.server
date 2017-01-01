@@ -38,6 +38,12 @@ object Constants {
   final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_5_SERIE = "Serie Número Adicional 5"
   final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_6 = "Número Adicional 6"
   final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_6_SERIE = "Serie Número Adicional 6"
+  final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_7 = "Número Adicional 7"
+  final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_7_SERIE = "Serie Número Adicional 7"
+  final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_8 = "Número Adicional 8"
+  final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_8_SERIE = "Serie Número Adicional 8"
+  final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_9 = "Número Adicional 9"
+  final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_9_SERIE = "Serie Número Adicional 9"
 
   //
   // LA PRIMITIVA
