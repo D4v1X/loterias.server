@@ -10,6 +10,7 @@ class JobSchedulerGuiceModule extends AbstractModule with AkkaGuiceSupport {
 
     // declare here any scraper actor so that it can be injectable into other modules via Guice
     bindActor[CuponazoOnceScraper](Constants.CUPONAZO_ONCE_SCRAPER_NAME)
+    bindActor[EuromillonesScraper](Constants.EUROMILLONES_SCRAPER_NAME)
     bindActor[PrimitivaScraper](Constants.PRIMITIVA_SCRAPER_NAME)
     bindActor[BonolotoScraper](Constants.BONOLOTO_SCRAPER_NAME)
     bindActor[GordoScraper](Constants.GORDO_SCRAPER_NAME)

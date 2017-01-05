@@ -13,6 +13,7 @@ object Constants {
 
   // Actor names
   final val CUPONAZO_ONCE_SCRAPER_NAME = "CUPONAZO_ONCE_SCRAPER_ACTOR"
+  final val EUROMILLONES_SCRAPER_NAME = "EUROMILLONES_SCRAPER_ACTOR"
   final val PRIMITIVA_SCRAPER_NAME = "PRIMITIVA_SCRAPER_ACTOR"
   final val BONOLOTO_SCRAPER_NAME = "BONOLOTO_SCRAPER_ACTOR"
   final val GORDO_SCRAPER_NAME = "GORDO_SCRAPER_ACTOR"
@@ -44,6 +45,14 @@ object Constants {
   final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_8_SERIE = "Serie Número Adicional 8"
   final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_9 = "Número Adicional 9"
   final val TM_COMB_PART_CUPONAZO_ADDITIONAL_NUM_9_SERIE = "Serie Número Adicional 9"
+
+  //
+  // EUROMILLONES
+  //
+  final val TM_LOTTERY_EUROMILLONES_NAME = "Euromillones"
+  final val TM_COMB_PART_EUROMILLONES_COMB_NAME = "Combinación ganadora"
+  final val TM_COMB_PART_EUROMILLONES_ESTRE_NAME = "Estrellas"
+  final val TM_COMB_PART_EUROMILLONES_MILLON_NAME = "El Millón"
 
   //
   // LA PRIMITIVA

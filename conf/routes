@@ -2,18 +2,21 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET        /test                    com.serinus.loto.controllers.TestController.test
-GET        /test/lottery            com.serinus.loto.controllers.TestController.testLottery
-GET        /test/combination        com.serinus.loto.controllers.TestController.testCombination
-GET        /test/result             com.serinus.loto.controllers.TestController.testResult
+GET        /test                         com.serinus.loto.controllers.TestController.test
+GET        /test/lottery                 com.serinus.loto.controllers.TestController.testLottery
+GET        /test/combination             com.serinus.loto.controllers.TestController.testCombination
+GET        /test/result                  com.serinus.loto.controllers.TestController.testResult
 
-GET        /once                    com.serinus.loto.controllers.TestController.testCuponazo
-GET        /once/historic           com.serinus.loto.controllers.TestController.testHistoricCuponazo
+GET        /once                         com.serinus.loto.controllers.TestController.testCuponazo
+GET        /once/historic                com.serinus.loto.controllers.TestController.testHistoricCuponazo
 
-GET        /primitiva               com.serinus.loto.controllers.TestController.testPrimitiva
+GET        /euromillones                 com.serinus.loto.controllers.TestController.testEuromillones
+GET        /euromillones/historic        com.serinus.loto.controllers.TestController.testHistoricEuromillones
 
-GET        /bonoloto                com.serinus.loto.controllers.TestController.testBonoloto
+GET        /primitiva                    com.serinus.loto.controllers.TestController.testPrimitiva
 
-GET        /gordo                   com.serinus.loto.controllers.TestController.testGordo
+GET        /bonoloto                     com.serinus.loto.controllers.TestController.testBonoloto
 
-GET        /lototurf                com.serinus.loto.controllers.TestController.testLototurf
+GET        /gordo                        com.serinus.loto.controllers.TestController.testGordo
+
+GET        /lototurf                     com.serinus.loto.controllers.TestController.testLototurf

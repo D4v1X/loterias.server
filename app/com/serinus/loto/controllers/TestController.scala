@@ -70,6 +70,20 @@ class TestController @Inject()
 
   }
 
+  def testEuromillones = Action.async {
+    testService.testEuromillonesParser
+    Future{
+      Ok("")
+    }
+  }
+
+  def testHistoricEuromillones = Action.async {
+    testService.testHistoricEuromillonesParser
+    Future {
+      Ok("")
+    }
+  }
+
   def testPrimitiva = Action.async {
 
     testService.testPrimitivaParser

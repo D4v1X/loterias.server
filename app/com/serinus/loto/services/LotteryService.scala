@@ -13,6 +13,10 @@ class LotteryService @Inject() (db: DB) {
     getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_LOTOTURF_NAME, name)
   }
 
+  def getEuromillonesCombinationPartIdWithName(name: String) = {
+    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_EUROMILLONES_NAME, name)
+  }
+
   def getGordoCombinationPartIdWithName(name: String) = {
     getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_GORDO_NAME, name)
   }
