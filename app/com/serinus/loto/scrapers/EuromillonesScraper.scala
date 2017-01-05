@@ -34,7 +34,7 @@ class EuromillonesScraper @Inject()(db: DB, lotteryService: LotteryService) exte
     * URI for the lottery we want to scrap
     */
   override protected val lotteryUrl: (RaffleDate) => URI = _ =>
-    URI.create(s"http://euromillones.combinacionganadora.com/2014/07/08/")
+    URI.create(s"http://euromillones.combinacionganadora.com/")
 
   /**
     * URI for the historic lottery page
