@@ -4,12 +4,14 @@ import java.net.URI
 import java.time.{DayOfWeek, LocalDate}
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import java.util.function.Consumer
 import javax.inject.{Inject, Named}
 
 import akka.actor.Actor
+import com.serinus.loto.scrapers.ScraperMessages.ScrapHistoricBonoloto
 import com.serinus.loto.services.LotteryService
 import com.serinus.loto.utils.{Constants, DB}
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.{Document, Element}
 import play.api.Logger
 
 import scala.collection.mutable.ListBuffer
@@ -21,19 +23,25 @@ class BonolotoScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
 
   override def receive: PartialFunction[Any, Unit] = {
     case ScraperMessages.ScrapBonoloto => run
+    case ScrapHistoricBonoloto(init, end) => runHistoric(init, end)
     case _ @ msg => Logger.warn(s"${this.getClass.getName} received unrecognized message $msg")
   }
+
 
   /**
     * URL for the lottery we want to scrap
     */
-  override protected val lotteryUrl: RaffleDate => URI = _ =>
-    URI.create("http://www.loteriasyapuestas.es/es/bonoloto")
+  override protected val lotteryUrl: RaffleDate => URI = rd => {
+    val parsedDate = rd.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))
+    URI.create(s"http://bonoloto.combinacionganadora.com/$parsedDate/")
+  }
+
 
   /**
     * Database connection
     */
   override protected val getDB: DB = db
+
 
   /**
     * Parses the HTML contained in the URL specified and extracts any possible results
@@ -43,45 +51,29 @@ class BonolotoScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
   override protected def resultsParser(doc: Document, raffleDate: RaffleDate): Future[Either[ScrapError, ScrapResultList]] = {
     Logger.debug("Starting Bonoloto scraper")
 
-    if (raffleResultAvailableForDate(doc, raffleDate)) {
-      for {
+    try {
+      if (raffleResultAvailableForDate(doc, raffleDate)) {
+        val combinationPartNames = List(Constants.TM_COMB_PART_BONOLOTO_COMB_NAME, Constants.TM_COMB_PART_BONOLOTO_COMPL_NAME, Constants.TM_COMB_PART_BONOLOTO_REINT_NAME)
+        val listFutureIds = combinationPartNames map lotteryService.getBonolotoCombinationPartIdWithName
+        val futureIdList = Future.fold(listFutureIds)(ListBuffer.empty: ListBuffer[Integer])(_ += _)
 
-        // Combinacion ganadora
-        partCombGanadoraId <- lotteryService.getBonolotoCombinationPartIdWithName(
-          Constants.TM_COMB_PART_BONOLOTO_COMB_NAME)
+        futureIdList map { combPartIds =>
+          Right(generateBonolotoResults(doc, combPartIds, raffleDate))
+        } recover {
+          case err => Left(s"${err.getMessage}")
+        }
 
-        // Complementario
-        partCombGanadoraComplementarioId <- lotteryService.getBonolotoCombinationPartIdWithName(
-          Constants.TM_COMB_PART_BONOLOTO_COMPL_NAME)
-
-        // Reintegro
-        partCombGanadoraReintId <- lotteryService.getBonolotoCombinationPartIdWithName(
-          Constants.TM_COMB_PART_BONOLOTO_REINT_NAME)
-
-
-      } yield {
-
-        var results = new ListBuffer[ScrapResult]()
-        val raffleDay = LocalDate.now()
-
-        val combGanadoraValue = parseCombinacionGanadora(doc)
-        results += ((raffleDay, partCombGanadoraId, combGanadoraValue))
-
-        val complementarioCombGanadora = parseComplementarioCombGanadora(doc)
-        results += ((raffleDay, partCombGanadoraComplementarioId, complementarioCombGanadora))
-
-        val reintCombGanadora = parseReintCombGanadora(doc)
-        results += ((raffleDay, partCombGanadoraReintId, reintCombGanadora))
-
-        Right(results)
-
+      } else {
+        Future(Left("There is no raffle result yet for Bonoloto"))
       }
-    } else {
-
-      Future(Left("There is no raffle result yet for Bonoloto"))
-
+    } catch {
+      case e: Throwable =>
+        Logger.error("There's been an error executing the Bonoloto parser", e)
+        Future(Left("There's been an error executing the Bonoloto parser"))
     }
+
   }
+
 
   /**
     * Checks if the raffle result is available at the time of scraping
@@ -91,16 +83,35 @@ class BonolotoScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
     * @return True if the raffle result is available or False otherwise
     */
   override protected def raffleResultAvailableForDate(doc: Document, raffleDate: RaffleDate): Boolean = {
-    val datePattern = "\\d{2}\\/\\d{2}\\/\\d{4}".r
-    val raffleDayString = datePattern.findFirstIn(doc.getElementById("lastResultsTitleLink").text()).get
+    val dateHtmlElem = doc.select(".fld_gameDate").first()
 
-    val parsedDateTime = DateTimeFormatter
-      .ofPattern("dd/MM/yyyy")
-      .withLocale(new Locale(Constants.SPANISH_LOCALE_CODE))
-      .parse(raffleDayString)
-
-    LocalDate.from(parsedDateTime) == raffleDate
+    if (dateHtmlElem != null) {
+      val parsedDateTime = DateTimeFormatter
+        .ofPattern("EEEE, d 'de' MMMM 'de' uuuu")
+        .withLocale(new Locale(Constants.SPANISH_LOCALE_CODE))
+        .parse(dateHtmlElem.html())
+      LocalDate.from(parsedDateTime) == raffleDate
+    } else {
+      Logger.error(s"Error trying to find the element with class <.fld_gameDate> in the html document.")
+      false
+    }
   }
+
+
+  /**
+    * Generates the list of Bonoloto results
+    *
+    * @param doc the JSoup HTML document
+    * @param combPartIds the ordered list of TmCombinationPart identifiers for each one of the results associated with the Bonoloto
+    * @return the list of Bonoloto results
+    */
+  private def generateBonolotoResults(doc: Document,
+                                      combPartIds: Seq[Integer],
+                                      raffleDate: RaffleDate): Seq[ScrapResult] = {
+    val winningResults = List(parseCombinacionGanadora(doc), parseComplementarioCombGanadora(doc), parseReintCombGanadora(doc))
+    (combPartIds zip winningResults).map(tuple => (raffleDate, tuple._1.toInt, tuple._2))
+  }
+
 
   /**
     * Parses the winning number
@@ -108,13 +119,17 @@ class BonolotoScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
     * @param doc the Jsoup HTML document
     * @return the ResultValue containing the winning number
     */
-  def parseCombinacionGanadora(doc: Document): ResultValue ={
+  def parseCombinacionGanadora(doc: Document): ResultValue = {
     Logger.debug("Parsing the winning number from the HTML document")
 
-    val combinacionGanadora = doc.getElementsByClass("cuerpoRegionIzq").first().getElementsByTag("li").text()
+    var combinacionGanadora = ListBuffer[String]()
+    doc.getElementsByClass("resultsWrapper").first().getElementsByTag("li").forEach(new Consumer[Element] {
+      override def accept(t: Element) = combinacionGanadora += t.html()
+    })
 
-    combinacionGanadora.replace(" ", ",")
+    combinacionGanadora.mkString(",")
   }
+
 
   /**
     * Parses the "Complementario" for the winning number
@@ -125,8 +140,9 @@ class BonolotoScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
   def parseComplementarioCombGanadora(doc: Document): ResultValue = {
     Logger.debug("Parsing the winning number Complementario from the HTML document")
 
-    doc.getElementsByClass("cuerpoRegionDerecha").first().getElementsByClass("bolaPeq").first().text()
+    doc.select(".resultsAuxNumbersWrapper .ctrlNumbers:eq(0) dd").first().html()
   }
+
 
   /**
     * Parses the "Reintegro" for the winning number
@@ -137,24 +153,31 @@ class BonolotoScraper @Inject()(db: DB, lotteryService: LotteryService) extends 
   def parseReintCombGanadora(doc: Document): ResultValue = {
     Logger.debug("Parsing the winning number Reintegro from the HTML document")
 
-    doc.getElementsByClass("cuerpoRegionDerecha").first().getElementsByClass("bolaPeq").last().text()
+    doc.select(".resultsAuxNumbersWrapper .ctrlNumbers:eq(1) dd").first().html()
   }
+
 
   /**
     * URI for the historic lottery page
     */
-  override protected val historicLotteryUrl: (RaffleDate) => URI = ???
+  override protected val historicLotteryUrl: RaffleDate => URI = lotteryUrl
+
 
   /**
     * Days when the lottery takes place
     */
-  override protected val raffleWeekDays: Seq[DayOfWeek] = ???
+  override protected val raffleWeekDays: Seq[DayOfWeek] = List(
+    DayOfWeek.MONDAY, DayOfWeek.TUESDAY,
+    DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY,
+    DayOfWeek.FRIDAY, DayOfWeek.SATURDAY)
+
 
   /**
     * Parses the HTML contained in the URI specified and extracts any possible historic results
     *
     * @return a future containing either an error (if something wrong happened) or a sequence of results
     */
-  override protected def historicResultsParser(doc: Document, raffleDate: RaffleDate): Future[Either[ScrapError, ScrapResultList]] = ???
+  override protected def historicResultsParser(doc: Document, raffleDate: RaffleDate): Future[Either[ScrapError, ScrapResultList]] =
+    resultsParser(doc, raffleDate)
 
 }

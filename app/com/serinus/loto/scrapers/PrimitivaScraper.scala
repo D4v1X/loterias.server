@@ -1,14 +1,16 @@
 package com.serinus.loto.scrapers
 import java.net.URI
-import java.time.{DayOfWeek, LocalDate}
 import java.time.format.DateTimeFormatter
+import java.time.{DayOfWeek, LocalDate}
 import java.util.Locale
+import java.util.function.Consumer
 import javax.inject.{Inject, Named}
 
 import akka.actor.Actor
+import com.serinus.loto.scrapers.ScraperMessages.ScrapHistoricPrimitiva
 import com.serinus.loto.services.LotteryService
 import com.serinus.loto.utils.{Constants, DB}
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.{Document, Element}
 import play.api.Logger
 
 import scala.collection.mutable.ListBuffer
@@ -22,6 +24,7 @@ class PrimitivaScraper @Inject() (db: DB, lotteryService: LotteryService) extend
 
   def receive: PartialFunction[Any, Unit] = {
     case ScraperMessages.ScrapPrimitiva => run
+    case ScrapHistoricPrimitiva(init, end) => runHistoric(init, end)
     case _ @ msg => Logger.warn(s"${this.getClass.getName} received unrecognized message $msg")
   }
 
@@ -29,13 +32,17 @@ class PrimitivaScraper @Inject() (db: DB, lotteryService: LotteryService) extend
   /**
     * URL for the lottery we want to scrap
     */
-  override protected val lotteryUrl: RaffleDate => URI = _ =>
-    URI.create("http://www.loteriasyapuestas.es/es/la-primitiva")
+  override protected val lotteryUrl: RaffleDate => URI = rd => {
+    val parsedDate = rd.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))
+    URI.create(s"http://primitiva.combinacionganadora.com/$parsedDate/")
+  }
+
 
   /**
     * Database connection
     */
   override protected val getDB: DB = db
+
 
   /**
     * Parses the HTML contained in the URL specified and extracts any possible results
@@ -45,69 +52,69 @@ class PrimitivaScraper @Inject() (db: DB, lotteryService: LotteryService) extend
   override protected def resultsParser(doc: Document, raffleDate: RaffleDate): Future[Either[ScrapError, ScrapResultList]] = {
     Logger.debug("Starting Primitiva scraper")
 
-    if (raffleResultAvailableForDate(doc, raffleDate)) {
-      for {
-
-      // Combinacion ganadora
-        partCombGanadoraId <- lotteryService.getPrimitivaCombinationPartIdWithName(
-          Constants.TM_COMB_PART_PRIMITIVA_COMB_NAME)
-
-        // Complementario
-        partCombGanadoraComplementarioId <- lotteryService.getPrimitivaCombinationPartIdWithName(
-          Constants.TM_COMB_PART_PRIMITIVA_COMPL_NAME)
-
-        // Reintegro
-        partCombGanadoraReintId <- lotteryService.getPrimitivaCombinationPartIdWithName(
-          Constants.TM_COMB_PART_PRIMITIVA_REINT_NAME)
-
-        //Joker
-        partCombGanadoraJokerId <- lotteryService.getPrimitivaCombinationPartIdWithName(
+    try {
+      if (raffleResultAvailableForDate(doc, raffleDate)) {
+        val combinationPartNames = List(
+          Constants.TM_COMB_PART_PRIMITIVA_COMB_NAME,
+          Constants.TM_COMB_PART_PRIMITIVA_COMPL_NAME,
+          Constants.TM_COMB_PART_PRIMITIVA_REINT_NAME,
           Constants.TM_COMB_PART_PRIMITIVA_JOKER_NAME)
+        val listFutureIds = combinationPartNames map lotteryService.getPrimitivaCombinationPartIdWithName
+        val futureIdList = Future.fold(listFutureIds)(ListBuffer.empty: ListBuffer[Integer])(_ += _)
 
-      } yield {
+        futureIdList map { combPartIds =>
+          Right(generatePrimitivaResults(doc, combPartIds, raffleDate))
+        } recover {
+          case err => Left(s"${err.getMessage}")
+        }
 
-        var results = new ListBuffer[ScrapResult]()
-        val raffleDay = LocalDate.now()
-
-        val combGanadoraValue = parseCombinacionGanadora(doc)
-        results += ((raffleDay, partCombGanadoraId, combGanadoraValue))
-
-        val complementarioCombGanadora = parseComplementarioCombGanadora(doc)
-        results += ((raffleDay, partCombGanadoraComplementarioId, complementarioCombGanadora))
-
-        val reintCombGanadora = parseReintCombGanadora(doc)
-        results += ((raffleDay, partCombGanadoraReintId, reintCombGanadora))
-
-        val jokerCombGanadora = parseJokerCombGanadora(doc)
-        results += ((raffleDay, partCombGanadoraJokerId, jokerCombGanadora))
-
-        Right(results)
-
+      } else {
+        Future(Left("There is no raffle result yet for Primitiva"))
       }
-    } else {
-
-      Future(Left("There is no raffle result yet for Primitiva"))
-
+    } catch {
+      case e: Throwable =>
+        Logger.error("There's been an error executing the Primitiva parser", e)
+        Future(Left("There's been an error executing the Primitiva parser"))
     }
+
   }
+
 
   /**
     * Checks if the raffle result is available at the time of scraping
+    *
     * @param doc The Jsoup HTML document
     * @param raffleDate the date to check for results
     * @return True if the raffle result is available or False otherwise
     */
   override protected def raffleResultAvailableForDate(doc: Document, raffleDate: RaffleDate): Boolean = {
-    val datePattern = "\\d{2}\\/\\d{2}\\/\\d{4}".r
-    val raffleDayString = datePattern.findFirstIn(doc.getElementById("lastResultsTitleLink").text()).get
+    val dateHtmlElem = doc.select(".fld_gameDate").first()
 
-    val parsedDateTime = DateTimeFormatter
-      .ofPattern("dd/MM/yyyy")
-      .withLocale(new Locale(Constants.SPANISH_LOCALE_CODE))
-      .parse(raffleDayString)
-
-    LocalDate.from(parsedDateTime) == raffleDate
+    if (dateHtmlElem != null) {
+      val parsedDateTime = DateTimeFormatter
+        .ofPattern("EEEE, d 'de' MMMM 'de' uuuu")
+        .withLocale(new Locale(Constants.SPANISH_LOCALE_CODE))
+        .parse(dateHtmlElem.html())
+      LocalDate.from(parsedDateTime) == raffleDate
+    } else {
+      Logger.error(s"Error trying to find the element with class <.fld_gameDate> in the html document.")
+      false
+    }
   }
+
+
+  private def generatePrimitivaResults(doc: Document,
+                                       combPartIds: Seq[Integer],
+                                       raffleDate: RaffleDate): Seq[ScrapResult] = {
+    var winningResults = ListBuffer(parseCombinacionGanadora(doc), parseComplementarioCombGanadora(doc), parseReintCombGanadora(doc))
+    val availableCombPartIds = ListBuffer(combPartIds: _*)
+    parseJokerCombGanadora(doc) match {
+      case Some(j) => winningResults += j
+      case None => availableCombPartIds.remove(availableCombPartIds.size - 1)
+    }
+    (availableCombPartIds zip winningResults).map(tuple => (raffleDate, tuple._1.toInt, tuple._2))
+  }
+
 
   /**
     * Parses the winning number
@@ -118,10 +125,14 @@ class PrimitivaScraper @Inject() (db: DB, lotteryService: LotteryService) extend
   def parseCombinacionGanadora(doc: Document): ResultValue ={
     Logger.debug("Parsing the winning number from the HTML document")
 
-    val combinacionGanadora = doc.getElementsByClass("cuerpoRegionIzq").first().getElementsByTag("li").text()
+    var combinacionGanadora = ListBuffer[String]()
+    doc.getElementsByClass("resultsWrapper").first().getElementsByTag("li").forEach(new Consumer[Element] {
+      override def accept(t: Element) = combinacionGanadora += t.html()
+    })
 
-    combinacionGanadora.replace(" ", ",")
+    combinacionGanadora.mkString(",")
   }
+
 
   /**
     * Parses the "Complementario" for the winning number
@@ -132,8 +143,9 @@ class PrimitivaScraper @Inject() (db: DB, lotteryService: LotteryService) extend
   def parseComplementarioCombGanadora(doc: Document): ResultValue = {
     Logger.debug("Parsing the winning number Complementario from the HTML document")
 
-    doc.getElementsByClass("cuerpoRegionDerecha").first().getElementsByClass("bolaPeq").first().text()
+    doc.select(".resultsAuxNumbersWrapper .ctrlNumbers:eq(0) dd").first().html()
   }
+
 
   /**
     * Parses the "Reintegro" for the winning number
@@ -144,35 +156,44 @@ class PrimitivaScraper @Inject() (db: DB, lotteryService: LotteryService) extend
   def parseReintCombGanadora(doc: Document): ResultValue = {
     Logger.debug("Parsing the winning number Reintegro from the HTML document")
 
-    doc.getElementsByClass("cuerpoRegionDerecha").first().getElementsByClass("bolaPeq").last().text()
+    doc.select(".resultsAuxNumbersWrapper .ctrlNumbers:eq(1) dd").first().html()
   }
+
 
   /**
     * Parses the Joker for the winning number
     * @param doc the Jsoup HTML document
     * @return the ResultValue containing the Joker
     */
-  def parseJokerCombGanadora(doc: Document): ResultValue = {
+  def parseJokerCombGanadora(doc: Document): Option[ResultValue] = {
     Logger.debug("Parsing the winning number Joker from the HTML document")
 
-    val joker = doc.getElementsByClass("joker").first().text()
-
-    joker.replace(" ", "")
+    val joker = doc.select(".resultsAuxNumbersWrapper .ctrlNumbers:eq(2) dd").first()
+    if (joker != null) {
+      Some(joker.html())
+    } else {
+      None
+    }
   }
+
 
   /**
     * URI for the historic lottery page
     */
-  override protected val historicLotteryUrl: (RaffleDate) => URI = ???
+  override protected val historicLotteryUrl: (RaffleDate) => URI = lotteryUrl
+
+
   /**
     * Days when the lottery takes place
     */
-  override protected val raffleWeekDays: Seq[DayOfWeek] = ???
+  override protected val raffleWeekDays: Seq[DayOfWeek] = List(DayOfWeek.THURSDAY, DayOfWeek.SATURDAY)
+
 
   /**
     * Parses the HTML contained in the URI specified and extracts any possible historic results
     *
     * @return a future containing either an error (if something wrong happened) or a sequence of results
     */
-  override protected def historicResultsParser(doc: Document, raffleDate: RaffleDate): Future[Either[ScrapError, ScrapResultList]] = ???
+  override protected def historicResultsParser(doc: Document, raffleDate: RaffleDate): Future[Either[ScrapError, ScrapResultList]] =
+    resultsParser(doc, raffleDate)
 }

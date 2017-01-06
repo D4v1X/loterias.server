@@ -93,9 +93,27 @@ class TestController @Inject()
 
   }
 
+  def testHistoricPrimitiva = Action.async {
+
+    testService.testHistoricPrimitivaParser
+    Future {
+      Ok("")
+    }
+
+  }
+
   def testBonoloto = Action.async {
 
     testService.testBonolotoParser
+    Future {
+      Ok("")
+    }
+
+  }
+
+  def testHistoricBonoloto = Action.async {
+
+    testService.testHistoricBonolotoParser
     Future {
       Ok("")
     }
@@ -111,6 +129,15 @@ class TestController @Inject()
 
   }
 
+  def testHistoricGordo = Action.async {
+
+    testService.testHistoricGordoParser
+    Future {
+      Ok("")
+    }
+
+  }
+
   def testLototurf = Action.async {
 
     testService.testLototurfParser
@@ -118,6 +145,24 @@ class TestController @Inject()
       Ok("")
     }
 
+  }
+
+  def testHistoricLototurf = Action.async {
+
+    testService.testHistoricLototurfParser
+    Future {
+      Ok("")
+    }
+
+  }
+
+
+  def scrapAllHistoricData = Action.async {
+
+    testService.scrapAllHistoricData
+    Future {
+      Ok("")
+    }
   }
 
 }

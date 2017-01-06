@@ -2,6 +2,7 @@ package com.serinus.loto.services
 
 import javax.inject.Inject
 
+import com.serinus.loto.exceptions.DBException
 import com.serinus.loto.model.jooq.Tables
 import com.serinus.loto.utils.{Constants, DB}
 
@@ -9,19 +10,19 @@ import scala.concurrent.Future
 
 class LotteryService @Inject() (db: DB) {
 
-  def getLototurfCombinationPartIdWithName(name: String) = {
+  def getLototurfCombinationPartIdWithName(name: String): Future[Integer] = {
     getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_LOTOTURF_NAME, name)
   }
 
-  def getEuromillonesCombinationPartIdWithName(name: String) = {
+  def getEuromillonesCombinationPartIdWithName(name: String): Future[Integer] = {
     getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_EUROMILLONES_NAME, name)
   }
 
-  def getGordoCombinationPartIdWithName(name: String) = {
+  def getGordoCombinationPartIdWithName(name: String): Future[Integer] = {
     getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_GORDO_NAME, name)
   }
 
-  def getBonolotoCombinationPartIdWithName(name: String) = {
+  def getBonolotoCombinationPartIdWithName(name: String): Future[Integer] = {
     getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_BONOLOTO_NAME, name)
   }
 
@@ -33,7 +34,7 @@ class LotteryService @Inject() (db: DB) {
     getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_CUPONAZO_ONCE_NAME, name)
   }
 
-  def getLotteryCombinationPartIdWithName(lotteryName: String, combinationPartName: String): Future[Integer] = {
+  private def getLotteryCombinationPartIdWithName(lotteryName: String, combinationPartName: String): Future[Integer] = {
     db.query { db =>
 
       val tmCombinationPartId = db
@@ -42,9 +43,13 @@ class LotteryService @Inject() (db: DB) {
         .innerJoin(Tables.TM_LOTTERY).on(Tables.TM_LOTTERY.ID.eq(Tables.TM_COMBINATION_PART.LOTTERY_ID))
         .where(Tables.TM_LOTTERY.NAME.eq(lotteryName))
         .and(Tables.TM_COMBINATION_PART.NAME.eq(combinationPartName))
-        .fetchOne().value1()
+        .fetchOne()
 
-      tmCombinationPartId
+      if (tmCombinationPartId == null) {
+        Future.failed(new DBException(s"Error trying to retrieve the record in TM_COMBINATION_PART with name $combinationPartName"))
+      }
+
+      tmCombinationPartId.value1()
 
     }
   }

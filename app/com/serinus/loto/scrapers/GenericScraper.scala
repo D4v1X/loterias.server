@@ -1,9 +1,10 @@
 package com.serinus.loto.scrapers
 
 import java.net.URI
-import java.time.{DayOfWeek, Duration, LocalDate}
-import java.time.temporal.{ChronoUnit, TemporalAdjusters}
+import java.time.temporal.ChronoUnit
+import java.time.{DayOfWeek, LocalDate}
 
+import com.serinus.loto.exceptions.HtmlRetrievalException
 import com.serinus.loto.model.jooq.Tables
 import com.serinus.loto.utils.DB
 import org.jsoup.Jsoup
@@ -17,8 +18,16 @@ import scala.concurrent.Future
 trait GenericScraper {
 
 
-  private def getHtmlPageAt(uri: URI): Document = {
-    Jsoup.connect(uri.toString).get()
+  private def getHtmlPageAt(uri: URI): Option[Document] = {
+    Logger.debug(s"Getting the contents of the URI $uri")
+    try {
+      Some(Jsoup.connect(uri.toString).get())
+    } catch {
+      case e: Throwable => {
+        Logger.error(s"Error trying to get the HTML doc at $uri", e)
+        None
+      }
+    }
   }
 
 
@@ -27,16 +36,17 @@ trait GenericScraper {
     *
       */
   private def scrapUrl: Future[Unit] = {
-    val doc = getHtmlPageAt(lotteryUrl apply LocalDate.now)
+    val maybeDoc = getHtmlPageAt(lotteryUrl apply LocalDate.now)
 
-    val futureResult = resultsParser(doc, LocalDate.now)
-
-    futureResult map {
-
-      case Left(e) => Logger.error(e)
-
-      case Right(res) => saveResults(res)
-
+    maybeDoc match {
+      case Some(doc) =>
+        val futureResult = resultsParser(doc, LocalDate.now)
+        futureResult map {
+          case Left(e) => Logger.error(e)
+          case Right(res) => saveResults(res)
+        }
+      case None =>
+        Future.failed(new HtmlRetrievalException)
     }
 
   }
@@ -79,7 +89,7 @@ trait GenericScraper {
 
 
   /**
-    * URI for the historic lottery page
+    * URI for the historic lottery we want to scrap
     */
   protected val historicLotteryUrl: RaffleDate => URI
 
@@ -141,20 +151,20 @@ trait GenericScraper {
 
     val initialScrapDate = maybeInitialScrapDate getOrElse LocalDate.now.minus(1, ChronoUnit.DAYS)
     val finalScrapDate = maybeFinalScrapDate getOrElse LocalDate.now
+    val raffleWeekDaysSorted = raffleWeekDays.sorted
 
     0 until ChronoUnit.DAYS.between(initialScrapDate, finalScrapDate).toInt foreach { day =>
       val nextDate = initialScrapDate.plus(day, ChronoUnit.DAYS)
 
-      if (raffleWeekDays.sorted contains nextDate.getDayOfWeek) {
-        val htmlDoc = getHtmlPageAt(historicLotteryUrl apply nextDate)
-        historicResultsParser(htmlDoc, nextDate) map {
+      if (raffleWeekDaysSorted contains nextDate.getDayOfWeek) {
 
-          case Left(err) => Logger.error(s"${this.getClass.getName} error parsing raffle results for date $nextDate: $err")
-
-          case Right(res) => saveResults(res)
-
+        getHtmlPageAt(historicLotteryUrl apply nextDate) map { doc =>
+          Logger.debug("Html document retrieved correctly")
+          historicResultsParser(doc, nextDate) map {
+            case Left(err) => Logger.error(s"${this.getClass.getName} error parsing raffle results for date $nextDate: $err")
+            case Right(res) => saveResults(res)
+          }
         }
-
       }
     }
   }

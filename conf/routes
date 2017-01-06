@@ -14,9 +14,18 @@ GET        /euromillones                 com.serinus.loto.controllers.TestContro
 GET        /euromillones/historic        com.serinus.loto.controllers.TestController.testHistoricEuromillones
 
 GET        /primitiva                    com.serinus.loto.controllers.TestController.testPrimitiva
+GET        /primitiva/historic           com.serinus.loto.controllers.TestController.testHistoricPrimitiva
 
 GET        /bonoloto                     com.serinus.loto.controllers.TestController.testBonoloto
+GET        /bonoloto/historic            com.serinus.loto.controllers.TestController.testHistoricBonoloto
 
 GET        /gordo                        com.serinus.loto.controllers.TestController.testGordo
+GET        /gordo/historic               com.serinus.loto.controllers.TestController.testHistoricGordo
 
 GET        /lototurf                     com.serinus.loto.controllers.TestController.testLototurf
+GET        /lototurf/historic            com.serinus.loto.controllers.TestController.testHistoricLototurf
+
+
+
+#Let the part begin!
+GET        /all                          com.serinus.loto.controllers.TestController.scrapAllHistoricData

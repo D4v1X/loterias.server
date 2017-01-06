@@ -36,16 +36,22 @@ class TestService @Inject()(db: DB,
     cuponazoOnceScaper ! ScraperMessages.ScrapHistoricCuponazo(Some(LocalDate.of(2012, 6, 8)), None)
   }
 
+
   def testEuromillonesParser = {
     euromillonesScraper ! ScraperMessages.ScrapEuromillones
   }
 
   def testHistoricEuromillonesParser = {
-    euromillonesScraper ! ScraperMessages.ScrapHistoricEuromillones(Some(LocalDate.of(2011, 5, 6)), None)
+    euromillonesScraper ! ScraperMessages.ScrapHistoricEuromillones(Some(LocalDate.of(2004, 5, 14)), None)
   }
+
 
   def testPrimitivaParser = {
     primitivaScraper ! ScraperMessages.ScrapPrimitiva
+  }
+
+  def testHistoricPrimitivaParser = {
+    primitivaScraper ! ScraperMessages.ScrapHistoricPrimitiva(Some(LocalDate.of(2004, 5, 13)), None)
   }
 
 
@@ -53,15 +59,39 @@ class TestService @Inject()(db: DB,
     bonolotoScraper ! ScraperMessages.ScrapBonoloto
   }
 
+  def testHistoricBonolotoParser = {
+    bonolotoScraper ! ScraperMessages.ScrapHistoricBonoloto(Some(LocalDate.of(2004, 5, 18)), None)
+  }
+
 
   def testGordoParser = {
     gordoScraper ! ScraperMessages.ScrapGordo
+  }
+
+  def testHistoricGordoParser = {
+    gordoScraper ! ScraperMessages.ScrapHistoricGordo(Some(LocalDate.of(2004, 5, 16)), None)
   }
 
 
   def testLototurfParser = {
     lototurfScraper ! ScraperMessages.ScrapLototurf
   }
+
+  def testHistoricLototurfParser = {
+    lototurfScraper ! ScraperMessages.ScrapHistoricLototurf(Some(LocalDate.of(2006, 4, 16)), None)
+  }
+
+
+  def scrapAllHistoricData = {
+    cuponazoOnceScaper ! ScraperMessages.ScrapHistoricCuponazo(Some(LocalDate.of(2012, 6, 8)), None)
+    euromillonesScraper ! ScraperMessages.ScrapHistoricEuromillones(Some(LocalDate.of(2004, 5, 14)), None)
+    primitivaScraper ! ScraperMessages.ScrapHistoricPrimitiva(Some(LocalDate.of(2004, 5, 13)), None)
+    bonolotoScraper ! ScraperMessages.ScrapHistoricBonoloto(Some(LocalDate.of(2004, 5, 18)), None)
+    gordoScraper ! ScraperMessages.ScrapHistoricGordo(Some(LocalDate.of(2004, 5, 16)), None)
+    lototurfScraper ! ScraperMessages.ScrapHistoricLototurf(Some(LocalDate.of(2006, 4, 16)), None)
+  }
+
+
 
   def testLottery = {
     db.query { db =>

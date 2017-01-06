@@ -1,13 +1,13 @@
 package com.serinus.loto.scrapers
 
 import java.net.URI
-import java.time.{DayOfWeek, LocalDate}
 import java.time.format.DateTimeFormatter
+import java.time.{DayOfWeek, LocalDate}
 import java.util.Locale
 import javax.inject.{Inject, Named}
 
 import akka.actor.Actor
-import com.serinus.loto.scrapers.ScraperMessages.ScrapHistoricCuponazo
+import com.serinus.loto.scrapers.ScraperMessages.{ScrapCuponazo, ScrapHistoricCuponazo}
 import com.serinus.loto.services.LotteryService
 import com.serinus.loto.utils.{Constants, DB}
 import org.jsoup.nodes.Document
@@ -24,7 +24,7 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
 
 
   def receive: PartialFunction[Any, Unit] = {
-    case ScraperMessages.ScrapCuponazo => run
+    case ScrapCuponazo => run
     case ScrapHistoricCuponazo(init, end) => runHistoric(init, end)
     case _ @ msg => Logger.warn(s"${this.getClass.getName} received unrecognized message $msg")
   }
@@ -40,26 +40,50 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
   override protected def resultsParser(doc: Document, raffleDate: RaffleDate): Future[Either[ScrapError, ScrapResultList]] = {
     Logger.debug("Starting Cuponazo Once scraper")
 
-    if (raffleResultAvailableForDate(doc, raffleDate)) {
+    try {
+      if (raffleResultAvailableForDate(doc, raffleDate)) {
+        val listFutureIds = getCombinationPartNames(doc) map lotteryService.getCuponazoCombinationPartIdWithName
+        val futureIdList = Future.fold(listFutureIds)(ListBuffer.empty: ListBuffer[Integer])(_ += _)
 
-      val listFutureIds = getCombinationPartNames(doc) map lotteryService.getCuponazoCombinationPartIdWithName
+        futureIdList map { combPartIds =>
+          Right(generateCuponazoResults(doc, combPartIds, raffleDate))
+        } recover {
+          case err => Left(s"${err.getMessage}")
+        }
 
-      val futureIdList = Future.fold(listFutureIds)(ListBuffer.empty: ListBuffer[Integer])(_ += _)
-
-      val results = futureIdList map { combPartIds =>
-        Right(generateCuponazoResults(doc, combPartIds, raffleDate))
+      } else {
+        Future(Left("There is no raffle result yet for Cuponazo Once"))
       }
-
-      results
-
-    } else {
-      Future(Left("There is no raffle result yet for Cuponazo Once"))
+    } catch {
+      case e: Throwable =>
+        Logger.error("There's been an error executing the Cuponazo parser", e)
+        Future(Left("There's been an error executing the Cuponazo parser"))
     }
+
   }
 
 
-  private def getAdditionalNumbersSize(doc: Document): Int = {
-    doc.select("#adicionales table tbody tr").size()
+  /**
+    * Checks if the raffle result is available at the time of scraping
+    * @param doc The Jsoup HTML document
+    * @param raffleDate the date to check for results
+    * @return True if the raffle result is available or False otherwise
+    */
+  override protected def raffleResultAvailableForDate(doc: Document, raffleDate: RaffleDate): Boolean = {
+    val htmlDateElem = doc.select("time").first()
+
+    if (htmlDateElem != null) {
+      val raffleDayString = htmlDateElem.html()
+      val parsedDateTime = DateTimeFormatter
+        .ofPattern("EEEE d 'de' MMMM 'de' uuuu")
+        .withLocale(new Locale(Constants.SPANISH_LOCALE_CODE))
+        .parse(raffleDayString.toLowerCase)
+
+      LocalDate.from(parsedDateTime) == raffleDate
+    } else {
+      Logger.error(s"Error trying to extract the <time> element from the html document.")
+      false
+    }
   }
 
 
@@ -83,6 +107,14 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
   }
 
 
+  private def getAdditionalNumbersSize(doc: Document): Int = {
+    val size = doc.select("#adicionales table tbody tr").size()
+    Logger.debug(s"The number of Cuponazo additional numbers for today is $size")
+    size
+  }
+
+
+
   /**
     * Generates the list of Cuponazo results
     * @param doc the JSoup HTML document
@@ -97,25 +129,6 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
     val cuponazoResults = firstWinningResults ++ parseAdditionalNumbersAndSeries(doc)
 
     (combPartIds zip cuponazoResults).map(tuple => (raffleDate, tuple._1.toInt, tuple._2))
-  }
-
-
-
-  /**
-    * Checks if the raffle result is available at the time of scraping
-    * @param doc The Jsoup HTML document
-    * @param raffleDate the date to check for results
-    * @return True if the raffle result is available or False otherwise
-    */
-  override protected def raffleResultAvailableForDate(doc: Document, raffleDate: RaffleDate): Boolean = {
-    val raffleDayString = doc.select("time").first().html()
-
-    val parsedDateTime = DateTimeFormatter
-      .ofPattern("EEEE d 'de' MMMM 'de' uuuu")
-      .withLocale(new Locale(Constants.SPANISH_LOCALE_CODE))
-      .parse(raffleDayString.toLowerCase)
-
-    LocalDate.from(parsedDateTime) == raffleDate
   }
 
 
@@ -156,7 +169,7 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
     * @return the ResultValue containing the "Reintegro"
     */
   private def parseReintCombGanadora(doc: Document): ResultValue = {
-    Logger.debug("Parsing the winning number Reintegro from the HTML document")
+    Logger.debug("Parsing the winning number's Reintegro from the HTML document")
 
     val numberAndSeries = doc.select(".text-grb").first().html()
     val number = numberAndSeries.split("-")(0).trim
@@ -178,9 +191,9 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
 
     0 until additionalNumbersSize foreach { number =>
       val additionalNumber = doc.select(s"#adicionales table tbody tr:eq($number) td:eq(0)").first().html()
-      val additionalSerie = doc.select(s"#adicionales table tbody tr:eq(${number}) td:eq(1)").first().html()
+      val additionalSerie = doc.select(s"#adicionales table tbody tr:eq($number) td:eq(1)").first().html()
 
-      Logger.debug(s"Processing -> $additionalNumber and $additionalSerie")
+      Logger.debug(s"CuponazoOnceScraper processing additional number $additionalNumber and series $additionalSerie")
 
       additionalNumberAndSeries += additionalNumber.toArray.mkString(",")
       additionalNumberAndSeries += additionalSerie
@@ -193,8 +206,7 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
   /**
     * URI for the historic lottery page given a raffle date
     */
-  override protected val historicLotteryUrl: RaffleDate => URI = rd =>
-    URI.create(s"http://www.comprobarcupononce.es/cuponazo-once.php?del-dia=${rd.toString}")
+  override protected val historicLotteryUrl: RaffleDate => URI = lotteryUrl
 
 
   /**
