@@ -4,14 +4,13 @@ import java.net.URI
 import java.time.format.DateTimeFormatter
 import java.time.{DayOfWeek, LocalDate}
 import java.util.Locale
-import java.util.function.Consumer
 import javax.inject.{Inject, Named}
 
 import akka.actor.Actor
 import com.serinus.loto.scrapers.ScraperMessages.{ScrapEuromillones, ScrapHistoricEuromillones}
 import com.serinus.loto.services.LotteryService
 import com.serinus.loto.utils.{Constants, DB}
-import org.jsoup.nodes.{Document, Element}
+import org.jsoup.nodes.Document
 import play.api.Logger
 
 import scala.collection.mutable.ListBuffer

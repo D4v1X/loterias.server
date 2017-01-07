@@ -1,8 +1,8 @@
 package com.serinus.loto.scrapers
 
 import java.net.URI
-import java.time.{DayOfWeek, LocalDate}
 import java.time.format.DateTimeFormatter
+import java.time.{DayOfWeek, LocalDate}
 import java.util.Locale
 import java.util.function.Consumer
 import javax.inject.{Inject, Named}
