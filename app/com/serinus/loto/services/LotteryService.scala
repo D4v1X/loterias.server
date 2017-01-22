@@ -6,39 +6,41 @@ import com.serinus.loto.exceptions.DBException
 import com.serinus.loto.model.caseclasses.rest.{CombinationPartRestCC, ResultRestCC}
 import com.serinus.loto.model.jooq.Tables
 import com.serinus.loto.model.jooq.Tables.{TM_COMBINATION_PART, TM_LOTTERY, TW_RESULT}
+import com.serinus.loto.scrapers.RaffleDate
+import com.serinus.loto.types.{CombinationPartName, LotteryName}
 import com.serinus.loto.utils.{Constants, DB}
 import org.jooq.impl.DSL.max
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
 
-class LotteryService @Inject() (db: DB) {
+class LotteryService @Inject()(db: DB) {
 
-  def getLototurfCombinationPartIdWithName(name: String): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_LOTOTURF_NAME, name)
+  def getLototurfCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
+    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_LOTOTURF_NAME, combinationPartName)
   }
 
-  def getEuromillonesCombinationPartIdWithName(name: String): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_EUROMILLONES_NAME, name)
+  def getEuromillonesCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
+    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_EUROMILLONES_NAME, combinationPartName)
   }
 
-  def getGordoCombinationPartIdWithName(name: String): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_GORDO_NAME, name)
+  def getGordoCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
+    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_GORDO_NAME, combinationPartName)
   }
 
-  def getBonolotoCombinationPartIdWithName(name: String): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_BONOLOTO_NAME, name)
+  def getBonolotoCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
+    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_BONOLOTO_NAME, combinationPartName)
   }
 
-  def getPrimitivaCombinationPartIdWithName(name: String): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_PRIMITIVA_NAME, name)
+  def getPrimitivaCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
+    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_PRIMITIVA_NAME, combinationPartName)
   }
 
-  def getCuponazoCombinationPartIdWithName(name: String): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_CUPONAZO_ONCE_NAME, name)
+  def getCuponazoCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
+    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_CUPONAZO_ONCE_NAME, combinationPartName)
   }
 
-  private def getLotteryCombinationPartIdWithName(lotteryName: String, combinationPartName: String): Future[Integer] = {
+  private def getLotteryCombinationPartIdWithName(lotteryName: LotteryName, combinationPartName: CombinationPartName): Future[Integer] = {
     db.query { db =>
 
       val tmCombinationPartId = db
@@ -58,7 +60,7 @@ class LotteryService @Inject() (db: DB) {
     }
   }
 
-  def getLotteryLastResultOf(lotteryName: String): Future[ResultRestCC] = {
+  def getLotteryLastResultOf(lotteryName: LotteryName): Future[ResultRestCC] = {
 
     db.query { db =>
 
