@@ -62,6 +62,10 @@ class LotteryService @Inject()(db: DB) {
 
   def getLotteryLastResultOf(lotteryName: LotteryName): Future[ResultRestCC] = {
 
+    //TODO Change this funtion for:
+    /*
+     * getLotteryLastRaffleDayOf(lotteryName) and getLotteryResult(lotteryName, raffleDate)
+     */
     db.query { db =>
 
       val lastRaffleDay = db
@@ -97,7 +101,56 @@ class LotteryService @Inject()(db: DB) {
       )
 
     }
+
   }
 
+  def getLotteryLastRaffleDayOf(lotteryName: LotteryName): Future[RaffleDate] = {
+
+    db.query { db =>
+
+      val lastRaffleDay = db
+        .select(max(TW_RESULT.RAFFLE_DAY))
+        .from(TM_LOTTERY)
+        .innerJoin(TM_COMBINATION_PART).on(TM_LOTTERY.ID.equal(TM_COMBINATION_PART.LOTTERY_ID))
+        .innerJoin(TW_RESULT).on(TW_RESULT.COMBINATION_PART_ID.equal(TM_COMBINATION_PART.ID))
+        .where(TM_LOTTERY.NAME.equal(lotteryName))
+        .fetchOne().value1()
+
+
+      if (lastRaffleDay == null) {
+        Future.failed(new DBException(s"Error trying to retrieve the last date from TwResult with lottery name: $lotteryName"))
+      }
+
+      lastRaffleDay
+    }
+  }
+
+
+  def getLotteryResult(lotteryName: LotteryName, raffleDate: RaffleDate): Future[ResultRestCC] = {
+
+    //TODO Add Error when no exist Result for this RaffleDate
+    db.query { db =>
+
+      val combinationParts = db
+        .select(TM_COMBINATION_PART.NAME, TW_RESULT.VALUES)
+        .from(TM_LOTTERY)
+        .innerJoin(TM_COMBINATION_PART).on(TM_LOTTERY.ID.equal(TM_COMBINATION_PART.LOTTERY_ID))
+        .innerJoin(TW_RESULT).on(TW_RESULT.COMBINATION_PART_ID.equal(TM_COMBINATION_PART.ID))
+        .where(TM_LOTTERY.NAME.equal(lotteryName))
+        .and(TW_RESULT.RAFFLE_DAY.equal(raffleDate))
+        .orderBy(TM_COMBINATION_PART.PART_NUMBER)
+        .fetchInto(classOf[CombinationPartRestCC])
+
+      if (combinationParts == null) {
+        Future.failed(new DBException(s"Error trying to retrieve the last result from TM_COMBINATION_PART and TW_RESULT with lottery name: $lotteryName"))
+      }
+
+      ResultRestCC(
+        raffleDate,
+        combinationParts.toList
+      )
+
+    }
+  }
 
 }

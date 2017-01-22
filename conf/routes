@@ -8,6 +8,7 @@ GET        /bonoloto/lastResult                  com.serinus.loto.controllers.Bo
 GET        /cuponazoonce/lastResult              com.serinus.loto.controllers.CuponazoOnceController.lastResult
 #Euromillones
 GET        /euromillones/lastResult              com.serinus.loto.controllers.EuromillonesController.lastResult
+GET        /euromillones/result/:date            com.serinus.loto.controllers.EuromillonesController.result(date)
 # Gordo
 GET        /gordo/lastResult                     com.serinus.loto.controllers.GordoController.lastResult
 # Lottoturf
