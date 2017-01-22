@@ -2,33 +2,21 @@ package com.serinus.loto.controllers
 
 import javax.inject.Inject
 
-import com.serinus.loto.model.caseclasses._
+import com.serinus.loto.model.caseclasses.pojos.{TmCombinationPartCC, TmLotteryCC, TwResultCC}
 import com.serinus.loto.services.TestService
 import play.api.libs.json.Json
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent, Controller}
 
 import scala.collection.JavaConversions._
-import scala.concurrent.{ExecutionContext, Future}
-
-class TestController @Inject()
-  (testService: TestService)
-  (implicit ec: ExecutionContext) extends Controller {
+import scala.concurrent.ExecutionContext
 
 
-  implicit val tmLotteryWrites = Json.writes[TmLotteryCC]
-  implicit val tmCombinationWrites = Json.writes[TmCombinationPartCC]
-  implicit val twResultWrites = Json.writes[TwResultCC]
+class TestController @Inject()(testService: TestService)
+                              (implicit ec: ExecutionContext)
+  extends Controller {
 
 
-  def test = Action.async {
-    testService.hello.map { tmLottery =>
-
-      Ok(Json.toJson(TmLotteryCC.fromPojo(tmLottery)))
-
-    }
-  }
-
-  def testLottery = Action.async {
+  def testLottery: Action[AnyContent] = Action.async {
     testService.testLottery.map { tmLotteryList =>
 
       Ok(Json.toJson(TmLotteryCC.fromPojoList(tmLotteryList)))
@@ -36,7 +24,7 @@ class TestController @Inject()
     }
   }
 
-  def testCombination = Action.async {
+  def testCombination: Action[AnyContent] = Action.async {
     testService.testCombination.map { tmCombinationList =>
 
       Ok(Json.toJson(TmCombinationPartCC.fromPojoList(tmCombinationList)))
@@ -44,124 +32,11 @@ class TestController @Inject()
     }
   }
 
-  def testResult = Action.async {
+  def testResult: Action[AnyContent] = Action.async {
     testService.testResult.map { twResultList =>
 
       Ok(Json.toJson(TwResultCC.fromPojoList(twResultList)))
 
-    }
-  }
-
-  def testCuponazo = Action.async {
-
-    testService.testCuponazoParser
-    Future {
-      Ok("")
-    }
-
-  }
-
-  def testHistoricCuponazo = Action.async {
-
-    testService.testHistoricCuponazoParser
-    Future {
-      Ok("")
-    }
-
-  }
-
-  def testEuromillones = Action.async {
-    testService.testEuromillonesParser
-    Future{
-      Ok("")
-    }
-  }
-
-  def testHistoricEuromillones = Action.async {
-    testService.testHistoricEuromillonesParser
-    Future {
-      Ok("")
-    }
-  }
-
-  def testPrimitiva = Action.async {
-
-    testService.testPrimitivaParser
-    Future {
-      Ok("")
-    }
-
-  }
-
-  def testHistoricPrimitiva = Action.async {
-
-    testService.testHistoricPrimitivaParser
-    Future {
-      Ok("")
-    }
-
-  }
-
-  def testBonoloto = Action.async {
-
-    testService.testBonolotoParser
-    Future {
-      Ok("")
-    }
-
-  }
-
-  def testHistoricBonoloto = Action.async {
-
-    testService.testHistoricBonolotoParser
-    Future {
-      Ok("")
-    }
-
-  }
-
-  def testGordo = Action.async {
-
-    testService.testGordoParser
-    Future {
-      Ok("")
-    }
-
-  }
-
-  def testHistoricGordo = Action.async {
-
-    testService.testHistoricGordoParser
-    Future {
-      Ok("")
-    }
-
-  }
-
-  def testLototurf = Action.async {
-
-    testService.testLototurfParser
-    Future {
-      Ok("")
-    }
-
-  }
-
-  def testHistoricLototurf = Action.async {
-
-    testService.testHistoricLototurfParser
-    Future {
-      Ok("")
-    }
-
-  }
-
-
-  def scrapAllHistoricData = Action.async {
-
-    testService.scrapAllHistoricData
-    Future {
-      Ok("")
     }
   }
 

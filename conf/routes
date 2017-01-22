@@ -2,30 +2,39 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET        /test                         com.serinus.loto.controllers.TestController.test
-GET        /test/lottery                 com.serinus.loto.controllers.TestController.testLottery
-GET        /test/combination             com.serinus.loto.controllers.TestController.testCombination
-GET        /test/result                  com.serinus.loto.controllers.TestController.testResult
+# Bonoloto
+GET        /bonoloto/lastResult                  com.serinus.loto.controllers.BonolotoController.lastResult
+# Cuponazo Once
+GET        /cuponazoonce/lastResult              com.serinus.loto.controllers.CuponazoOnceController.lastResult
+#Euromillones
+GET        /euromillones/lastResult              com.serinus.loto.controllers.EuromillonesController.lastResult
+# Gordo
+GET        /gordo/lastResult                     com.serinus.loto.controllers.GordoController.lastResult
+# Lottoturf
+GET        /lottoturf/lastResult                 com.serinus.loto.controllers.LototurfController.lastResult
+# Primitiva
+GET        /primitiva/lastResult                 com.serinus.loto.controllers.PrimitivaController.lastResult
 
-GET        /once                         com.serinus.loto.controllers.TestController.testCuponazo
-GET        /once/historic                com.serinus.loto.controllers.TestController.testHistoricCuponazo
+# Scraper [Get Data]
+GET        /scraper/once                         com.serinus.loto.controllers.ScraperController.scrapCuponazo
+GET        /scraper/once/historic                com.serinus.loto.controllers.ScraperController.scrapHistoricCuponazo
+GET        /scraper/euromillones                 com.serinus.loto.controllers.ScraperController.scrapEuromillones
+GET        /scraper/euromillones/historic        com.serinus.loto.controllers.ScraperController.scrapHistoricEuromillones
+GET        /scraper/primitiva                    com.serinus.loto.controllers.ScraperController.scrapPrimitiva
+GET        /scraper/primitiva/historic           com.serinus.loto.controllers.ScraperController.scrapHistoricPrimitiva
+GET        /scraper/bonoloto                     com.serinus.loto.controllers.ScraperController.scrapBonoloto
+GET        /scraper/bonoloto/historic            com.serinus.loto.controllers.ScraperController.scrapHistoricBonoloto
+GET        /scraper/gordo                        com.serinus.loto.controllers.ScraperController.scrapGordo
+GET        /scraper/gordo/historic               com.serinus.loto.controllers.ScraperController.scrapHistoricGordo
+GET        /scraper/lototurf                     com.serinus.loto.controllers.ScraperController.scrapLototurf
+GET        /scraper/lototurf/historic            com.serinus.loto.controllers.ScraperController.scrapHistoricLototurf
+# Let the part begin!
+GET        /scraper/all                          com.serinus.loto.controllers.ScraperController.scrapAllHistoricData
 
-GET        /euromillones                 com.serinus.loto.controllers.TestController.testEuromillones
-GET        /euromillones/historic        com.serinus.loto.controllers.TestController.testHistoricEuromillones
-
-GET        /primitiva                    com.serinus.loto.controllers.TestController.testPrimitiva
-GET        /primitiva/historic           com.serinus.loto.controllers.TestController.testHistoricPrimitiva
-
-GET        /bonoloto                     com.serinus.loto.controllers.TestController.testBonoloto
-GET        /bonoloto/historic            com.serinus.loto.controllers.TestController.testHistoricBonoloto
-
-GET        /gordo                        com.serinus.loto.controllers.TestController.testGordo
-GET        /gordo/historic               com.serinus.loto.controllers.TestController.testHistoricGordo
-
-GET        /lototurf                     com.serinus.loto.controllers.TestController.testLototurf
-GET        /lototurf/historic            com.serinus.loto.controllers.TestController.testHistoricLototurf
+# Test
+GET        /test/lottery                         com.serinus.loto.controllers.TestController.testLottery
+GET        /test/combination                     com.serinus.loto.controllers.TestController.testCombination
+GET        /test/result                          com.serinus.loto.controllers.TestController.testResult
 
 
 
-#Let the part begin!
-GET        /all                          com.serinus.loto.controllers.TestController.scrapAllHistoricData
