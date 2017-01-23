@@ -3,7 +3,7 @@ package com.serinus.loto.services
 import javax.inject.Inject
 
 import com.serinus.loto.exceptions.DBException
-import com.serinus.loto.model.caseclasses.rest.{CombinationPartRestCC, ResultRestCC}
+import com.serinus.loto.model.caseclasses.rest.{CombinationPartRestCC, LotteryRestCC, ResultRestCC}
 import com.serinus.loto.model.jooq.Tables
 import com.serinus.loto.model.jooq.Tables.{TM_COMBINATION_PART, TM_LOTTERY, TW_RESULT}
 import com.serinus.loto.scrapers.RaffleDate
@@ -124,6 +124,20 @@ class LotteryService @Inject()(db: DB)
       )
 
     }
+  }
+
+  def getLotteryNames: Future[Seq[LotteryRestCC]] = {
+
+    db.query { db =>
+
+      val lotteryNames = db.select(TM_LOTTERY.NAME)
+        .from(TM_LOTTERY)
+        .fetchInto(classOf[LotteryRestCC])
+
+      lotteryNames
+
+    }
+
   }
 
 }
