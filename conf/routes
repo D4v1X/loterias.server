@@ -25,8 +25,8 @@ GET        /lottoturf/lastResult                 com.serinus.loto.controllers.Lo
 
 
 # Primitiva
-GET        /primitiva/lastResult                 com.serinus.loto.controllers.PrimitivaController.lastResult
-GET        /primitiva/stats/freqs                com.serinus.loto.controllers.PrimitivaController.computeFrequencies
+GET        /primitiva/lastResult                 com.serinus.loto.controllers.PrimitivaController.findLastResult
+GET        /primitiva/stats/freqs                com.serinus.loto.controllers.PrimitivaController.findFrequencies
 
 
 

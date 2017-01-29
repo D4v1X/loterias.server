@@ -2,15 +2,21 @@ package com.serinus.loto.lotostats
 
 import javax.inject.Inject
 
-import com.serinus.loto.services.PrimitivaStatsService
+import com.serinus.loto.services.{LotteryService, PrimitivaStatsService}
 import com.serinus.loto.utils.Constants
 import com.serinus.loto.{Freq, FreqMap, StatsError}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 
-class PrimitivaStats @Inject() (primitivaStatsService: PrimitivaStatsService) {
+class PrimitivaStats @Inject() (primitivaStatsService: PrimitivaStatsService,
+                                lotteryService: LotteryService) {
+
+
+  def findLastResult() = {
+    lotteryService.getLotteryLastResultOf(Constants.TM_LOTTERY_PRIMITIVA_NAME)
+  }
 
 
   def computeFrequencies(): Future[Either[StatsError, FreqMap]] = {
