@@ -1,21 +1,21 @@
-package com.serinus.loto.model.caseclasses.pojos
+package com.serinus.loto.model.caseclasses
 
 import com.serinus.loto.model.pojos.TmCombinationPart
-import play.api.libs.json.{Json, OWrites}
 
 import scala.collection.mutable.ListBuffer
 
 
-case class TmCombinationPartCC(id: Int,
-                               lotteryId: Int,
-                               partNumber: Short,
-                               name: String,
-                               numValues: Short)
+final case class TmCombinationPartCC(id: Int,
+                                     lotteryId: Int,
+                                     partNumber: Short,
+                                     name: String,
+                                     numValues: Short)
+final case class CombinationPartCC(partName: String,
+                                   partValue: String)
 
 
 object TmCombinationPartCC {
 
-  implicit val tmCombinationWrites: OWrites[TmCombinationPartCC] = Json.writes[TmCombinationPartCC]
 
   def fromPojoList(tmCombinationList: Seq[TmCombinationPart]): List[TmCombinationPartCC] = {
 

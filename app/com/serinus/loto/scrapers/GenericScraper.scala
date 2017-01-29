@@ -4,6 +4,7 @@ import java.net.URI
 import java.time.temporal.ChronoUnit
 import java.time.{DayOfWeek, LocalDate}
 
+import com.serinus.loto.{RaffleDate, ScrapError, ScrapResult, ScrapResultList}
 import com.serinus.loto.exceptions.HtmlRetrievalException
 import com.serinus.loto.model.jooq.Tables
 import com.serinus.loto.utils.DB
@@ -23,10 +24,9 @@ trait GenericScraper {
     try {
       Some(Jsoup.connect(uri.toString).get())
     } catch {
-      case e: Throwable => {
+      case e: Throwable =>
         Logger.error(s"Error trying to get the HTML doc at $uri", e)
         None
-      }
     }
   }
 

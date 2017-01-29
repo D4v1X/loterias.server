@@ -1,22 +1,21 @@
-package com.serinus.loto.model.caseclasses.pojos
+package com.serinus.loto.model.caseclasses
 
 import java.time.LocalDate
 
 import com.serinus.loto.model.pojos.TwResult
-import play.api.libs.json.{Json, OWrites}
 
 import scala.collection.mutable.ListBuffer
 
 
-case class TwResultCC(id: Int,
-                      raffleDay: LocalDate,
-                      combinationPartId: Int,
-                      values: String)
+final case class TwResultCC(id: Int,
+                            raffleDay: LocalDate,
+                            combinationPartId: Int,
+                            values: String)
+final case class ResultCC(raffleDay: LocalDate,
+                          combinationParts: List[CombinationPartCC])
 
 
 object TwResultCC {
-
-  implicit val twResultWrites: OWrites[TwResultCC] = Json.writes[TwResultCC]
 
   def fromPojoList(twResultList: Seq[TwResult]): List[TwResultCC] = {
 

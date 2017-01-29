@@ -3,18 +3,15 @@ package com.serinus.loto.controllers
 import java.time.LocalDate
 import javax.inject.Inject
 
-import com.serinus.loto.scrapers.RaffleDate
+import com.serinus.loto.RaffleDate
 import com.serinus.loto.services.LotteryService
 import com.serinus.loto.utils.Constants
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Controller}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
 
-
-class EuromillonesController @Inject()(lotteryServer: LotteryService)
-                                      (implicit ec: ExecutionContext)
-  extends Controller {
+class EuromillonesController @Inject()(lotteryServer: LotteryService) extends Controller {
 
 
   def lastResult: Action[AnyContent] = Action.async {

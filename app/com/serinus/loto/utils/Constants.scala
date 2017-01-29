@@ -1,8 +1,11 @@
 package com.serinus.loto.utils
 
-import com.serinus.loto.types.{CombinationPartName, LotteryName}
+import com.serinus.loto.{CombinationPartName, LotteryName}
+
 
 object Constants {
+
+  final val RESULTS_SEPARATOR = ","
 
   // general config
   final val SPANISH_LOCALE_CODE = "es"

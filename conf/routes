@@ -1,20 +1,34 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
-
 # Bonoloto
 GET        /bonoloto/lastResult                  com.serinus.loto.controllers.BonolotoController.lastResult
+
+
+
 # Cuponazo Once
 GET        /cuponazoonce/lastResult              com.serinus.loto.controllers.CuponazoOnceController.lastResult
+
+
+
 #Euromillones
 GET        /euromillones/lastResult              com.serinus.loto.controllers.EuromillonesController.lastResult
 GET        /euromillones/result/:date            com.serinus.loto.controllers.EuromillonesController.result(date)
+
+
+
 # Gordo
 GET        /gordo/lastResult                     com.serinus.loto.controllers.GordoController.lastResult
+
+
+
 # Lottoturf
 GET        /lottoturf/lastResult                 com.serinus.loto.controllers.LototurfController.lastResult
+
+
+
 # Primitiva
 GET        /primitiva/lastResult                 com.serinus.loto.controllers.PrimitivaController.lastResult
+GET        /primitiva/stats/freqs                com.serinus.loto.controllers.PrimitivaController.computeFrequencies
+
+
 
 # Scraper [Get Data]
 GET        /scraper/once                         com.serinus.loto.controllers.ScraperController.scrapCuponazo
@@ -29,13 +43,9 @@ GET        /scraper/gordo                        com.serinus.loto.controllers.Sc
 GET        /scraper/gordo/historic               com.serinus.loto.controllers.ScraperController.scrapHistoricGordo
 GET        /scraper/lototurf                     com.serinus.loto.controllers.ScraperController.scrapLototurf
 GET        /scraper/lototurf/historic            com.serinus.loto.controllers.ScraperController.scrapHistoricLototurf
+
+
+
 # Let the part begin!
 GET        /scraper/all                          com.serinus.loto.controllers.ScraperController.scrapAllHistoricData
-
-# Test
-GET        /test/lottery                         com.serinus.loto.controllers.TestController.testLottery
-GET        /test/combination                     com.serinus.loto.controllers.TestController.testCombination
-GET        /test/result                          com.serinus.loto.controllers.TestController.testResult
-
-
 

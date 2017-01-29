@@ -1,17 +1,17 @@
-package com.serinus.loto.model.caseclasses.pojos
+package com.serinus.loto.model.caseclasses
 
+import com.serinus.loto.LotteryName
 import com.serinus.loto.model.pojos.TmLottery
-import play.api.libs.json.{Json, OWrites}
 
 import scala.collection.mutable.ListBuffer
 
-case class TmLotteryCC(id: Int,
-                       name: String)
+
+final case class TmLotteryCC(id: Int, name: String)
+final case class LotteryCC(name: LotteryName)
 
 
 object TmLotteryCC {
 
-  implicit val tmLotteryWrites: OWrites[TmLotteryCC] = Json.writes[TmLotteryCC]
 
   def fromPojoList(tmLotteryList: Seq[TmLottery]): List[TmLotteryCC] = {
 

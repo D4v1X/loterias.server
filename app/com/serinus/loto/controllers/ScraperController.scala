@@ -5,11 +5,11 @@ import javax.inject.Inject
 import com.serinus.loto.services.ScraperService
 import play.api.mvc._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-class ScraperController @Inject()(scraperService: ScraperService)
-                                 (implicit ec: ExecutionContext)
-  extends Controller {
+
+class ScraperController @Inject() (scraperService: ScraperService) extends Controller {
 
 
   def scrapCuponazo: Action[AnyContent] = Action.async {

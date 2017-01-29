@@ -13,7 +13,7 @@ class JobScheduler @Inject()
   (@Named(Constants.PRIMITIVA_SCRAPER_NAME) primitivaScaper: ActorRef)
   (@Named(Constants.BONOLOTO_SCRAPER_NAME) bonolotoScraper: ActorRef)
   (@Named(Constants.GORDO_SCRAPER_NAME) gordoScraper: ActorRef)
-  (@Named(Constants.LOTOTURF_SCRAPER_NAME) lototurfScraper: ActorRef){
+  (@Named(Constants.LOTOTURF_SCRAPER_NAME) lototurfScraper: ActorRef) {
 
 
   // At long last! a scheduler using CRON expressions

@@ -7,6 +7,7 @@ import java.util.Locale
 import javax.inject.{Inject, Named}
 
 import akka.actor.Actor
+import com.serinus.loto._
 import com.serinus.loto.scrapers.ScraperMessages.{ScrapEuromillones, ScrapHistoricEuromillones}
 import com.serinus.loto.services.LotteryService
 import com.serinus.loto.utils.{Constants, DB}

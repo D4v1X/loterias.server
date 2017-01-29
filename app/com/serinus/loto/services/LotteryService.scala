@@ -3,19 +3,19 @@ package com.serinus.loto.services
 import javax.inject.Inject
 
 import com.serinus.loto.exceptions.DBException
-import com.serinus.loto.model.caseclasses.rest.{CombinationPartRestCC, LotteryRestCC, ResultRestCC}
+import com.serinus.loto.model.caseclasses.{CombinationPartCC, LotteryCC, ResultCC}
 import com.serinus.loto.model.jooq.Tables
 import com.serinus.loto.model.jooq.Tables.{TM_COMBINATION_PART, TM_LOTTERY, TW_RESULT}
-import com.serinus.loto.scrapers.RaffleDate
-import com.serinus.loto.types.{CombinationPartName, LotteryName}
 import com.serinus.loto.utils.{Constants, DB}
+import com.serinus.loto.{CombinationPartName, LotteryName, RaffleDate}
 import org.jooq.impl.DSL.max
 
 import scala.collection.JavaConversions._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-class LotteryService @Inject()(db: DB)
-                              (implicit ec: ExecutionContext) {
+
+class LotteryService @Inject() (db: DB) {
 
   def getLototurfCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
     getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_LOTOTURF_NAME, combinationPartName)
@@ -61,7 +61,8 @@ class LotteryService @Inject()(db: DB)
     }
   }
 
-  def getLotteryLastResultOf(lotteryName: LotteryName): Future[ResultRestCC] = {
+
+  def getLotteryLastResultOf(lotteryName: LotteryName): Future[ResultCC] = {
 
     for {
 
@@ -69,13 +70,10 @@ class LotteryService @Inject()(db: DB)
 
       resultRestCC <- getLotteryResult(lotteryName, lastRaffleDay)
 
-    } yield {
-
-      resultRestCC
-
-    }
+    } yield resultRestCC
 
   }
+
 
   def getLotteryLastRaffleDayOf(lotteryName: LotteryName): Future[RaffleDate] = {
 
@@ -99,7 +97,7 @@ class LotteryService @Inject()(db: DB)
   }
 
 
-  def getLotteryResult(lotteryName: LotteryName, raffleDate: RaffleDate): Future[ResultRestCC] = {
+  def getLotteryResult(lotteryName: LotteryName, raffleDate: RaffleDate): Future[ResultCC] = {
 
     //TODO Add Error when no exist Result for this RaffleDate
     db.query { db =>
@@ -112,13 +110,13 @@ class LotteryService @Inject()(db: DB)
         .where(TM_LOTTERY.NAME.equal(lotteryName))
         .and(TW_RESULT.RAFFLE_DAY.equal(raffleDate))
         .orderBy(TM_COMBINATION_PART.PART_NUMBER)
-        .fetchInto(classOf[CombinationPartRestCC])
+        .fetchInto(classOf[CombinationPartCC])
 
       if (combinationParts == null) {
         Future.failed(new DBException(s"Error trying to retrieve the last result from TM_COMBINATION_PART and TW_RESULT with lottery name: $lotteryName"))
       }
 
-      ResultRestCC(
+      ResultCC(
         raffleDate,
         combinationParts.toList
       )
@@ -126,13 +124,13 @@ class LotteryService @Inject()(db: DB)
     }
   }
 
-  def getLotteryNames: Future[Seq[LotteryRestCC]] = {
+  def getLotteryNames: Future[Seq[LotteryCC]] = {
 
     db.query { db =>
 
       val lotteryNames = db.select(TM_LOTTERY.NAME)
         .from(TM_LOTTERY)
-        .fetchInto(classOf[LotteryRestCC])
+        .fetchInto(classOf[LotteryCC])
 
       lotteryNames
 
