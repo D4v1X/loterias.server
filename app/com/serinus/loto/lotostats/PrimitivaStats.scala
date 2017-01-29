@@ -13,7 +13,6 @@ import scala.concurrent.Future
 class PrimitivaStats @Inject() (primitivaStatsService: PrimitivaStatsService,
                                 lotteryService: LotteryService) {
 
-
   def findLastResult() = {
     lotteryService.getLotteryLastResultOf(Constants.TM_LOTTERY_PRIMITIVA_NAME)
   }

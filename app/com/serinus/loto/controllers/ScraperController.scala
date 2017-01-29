@@ -14,7 +14,7 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
 
   def scrapCuponazo: Action[AnyContent] = Action.async {
 
-    scraperService.scrapCuponazoParser
+    scraperService.scrapCuponazo
     Future {
       Ok("")
     }
@@ -23,7 +23,7 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
 
   def scrapHistoricCuponazo: Action[AnyContent] = Action.async {
 
-    scraperService.scrapHistoricCuponazoParser
+    scraperService.scrapHistoricCuponazo
     Future {
       Ok("")
     }
@@ -31,14 +31,14 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
   }
 
   def scrapEuromillones: Action[AnyContent] = Action.async {
-    scraperService.scrapEuromillonesParser
+    scraperService.scrapEuromillones
     Future {
       Ok("")
     }
   }
 
   def scrapHistoricEuromillones: Action[AnyContent] = Action.async {
-    scraperService.scrapHistoricEuromillonesParser
+    scraperService.scrapHistoricEuromillones
     Future {
       Ok("")
     }
@@ -46,7 +46,7 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
 
   def scrapPrimitiva: Action[AnyContent] = Action.async {
 
-    scraperService.scrapPrimitivaParser
+    scraperService.scrapPrimitiva
     Future {
       Ok("")
     }
@@ -55,7 +55,7 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
 
   def scrapHistoricPrimitiva: Action[AnyContent] = Action.async {
 
-    scraperService.scrapHistoricPrimitivaParser
+    scraperService.scrapHistoricPrimitiva
     Future {
       Ok("")
     }
@@ -64,7 +64,7 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
 
   def scrapBonoloto: Action[AnyContent] = Action.async {
 
-    scraperService.scrapBonolotoParser
+    scraperService.scrapBonoloto
     Future {
       Ok("")
     }
@@ -73,7 +73,7 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
 
   def scrapHistoricBonoloto: Action[AnyContent] = Action.async {
 
-    scraperService.scrapHistoricBonolotoParser
+    scraperService.scrapHistoricBonoloto
     Future {
       Ok("")
     }
@@ -82,7 +82,7 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
 
   def scrapGordo: Action[AnyContent] = Action.async {
 
-    scraperService.scrapGordoParser
+    scraperService.scrapGordo
     Future {
       Ok("")
     }
@@ -91,7 +91,7 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
 
   def scrapHistoricGordo: Action[AnyContent] = Action.async {
 
-    scraperService.scrapHistoricGordoParser
+    scraperService.scrapHistoricGordo
     Future {
       Ok("")
     }
@@ -100,7 +100,7 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
 
   def scrapLototurf: Action[AnyContent] = Action.async {
 
-    scraperService.scrapLototurfParser
+    scraperService.scrapLototurf
     Future {
       Ok("")
     }
@@ -109,7 +109,7 @@ class ScraperController @Inject() (scraperService: ScraperService) extends Contr
 
   def scrapHistoricLototurf: Action[AnyContent] = Action.async {
 
-    scraperService.scrapHistoricLototurfParser
+    scraperService.scrapHistoricLototurf
     Future {
       Ok("")
     }

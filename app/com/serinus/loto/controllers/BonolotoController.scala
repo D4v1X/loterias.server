@@ -2,24 +2,20 @@ package com.serinus.loto.controllers
 
 import javax.inject.Inject
 
-import com.serinus.loto.services.LotteryService
-import com.serinus.loto.utils.Constants
+import com.serinus.loto.lotostats.BonolotoStats
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, Controller}
+import play.api.mvc.{Action, Controller}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class BonolotoController @Inject() (lotteryService: LotteryService) extends Controller {
+class BonolotoController @Inject() (bonolotoStats: BonolotoStats) extends Controller {
 
-
-  def lastResult: Action[AnyContent] = Action.async {
-
-    lotteryService.getLotteryLastResultOf(Constants.TM_LOTTERY_BONOLOTO_NAME).map { resultRestCC =>
-
-      Ok(Json.toJson(resultRestCC))
-
+  def findLastResult = Action.async {
+    bonolotoStats.findLastResult() map {
+      case result => Ok(Json.toJson(result))
+    } recover {
+      case err => InternalServerError(s"Error retrieving the last Bonoloto result: ${err.getMessage}")
     }
-
   }
 
 }

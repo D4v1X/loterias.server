@@ -17,57 +17,57 @@ class ScraperService @Inject()(db: DB,
 
 
 
-  def scrapCuponazoParser = {
+  def scrapCuponazo = {
     cuponazoOnceScaper ! ScraperMessages.ScrapCuponazo
   }
 
 
-  def scrapHistoricCuponazoParser = {
+  def scrapHistoricCuponazo = {
     cuponazoOnceScaper ! ScraperMessages.ScrapHistoricCuponazo(Some(LocalDate.of(2012, 6, 8)), None)
   }
 
 
-  def scrapEuromillonesParser = {
+  def scrapEuromillones = {
     euromillonesScraper ! ScraperMessages.ScrapEuromillones
   }
 
-  def scrapHistoricEuromillonesParser = {
+  def scrapHistoricEuromillones = {
     euromillonesScraper ! ScraperMessages.ScrapHistoricEuromillones(Some(LocalDate.of(2004, 5, 14)), None)
   }
 
 
-  def scrapPrimitivaParser = {
+  def scrapPrimitiva = {
     primitivaScraper ! ScraperMessages.ScrapPrimitiva
   }
 
-  def scrapHistoricPrimitivaParser = {
+  def scrapHistoricPrimitiva = {
     primitivaScraper ! ScraperMessages.ScrapHistoricPrimitiva(Some(LocalDate.of(2004, 5, 13)), None)
   }
 
 
-  def scrapBonolotoParser = {
+  def scrapBonoloto = {
     bonolotoScraper ! ScraperMessages.ScrapBonoloto
   }
 
-  def scrapHistoricBonolotoParser = {
+  def scrapHistoricBonoloto = {
     bonolotoScraper ! ScraperMessages.ScrapHistoricBonoloto(Some(LocalDate.of(2004, 5, 18)), None)
   }
 
 
-  def scrapGordoParser = {
+  def scrapGordo = {
     gordoScraper ! ScraperMessages.ScrapGordo
   }
 
-  def scrapHistoricGordoParser = {
+  def scrapHistoricGordo = {
     gordoScraper ! ScraperMessages.ScrapHistoricGordo(Some(LocalDate.of(2004, 5, 16)), None)
   }
 
 
-  def scrapLototurfParser = {
+  def scrapLototurf = {
     lototurfScraper ! ScraperMessages.ScrapLototurf
   }
 
-  def scrapHistoricLototurfParser = {
+  def scrapHistoricLototurf = {
     lototurfScraper ! ScraperMessages.ScrapHistoricLototurf(Some(LocalDate.of(2006, 4, 16)), None)
   }
 

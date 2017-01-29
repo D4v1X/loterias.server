@@ -1,51 +1,51 @@
 # Bonoloto
-GET        /bonoloto/lastResult                  com.serinus.loto.controllers.BonolotoController.lastResult
+GET        /bonoloto/stats/lastResult              com.serinus.loto.controllers.BonolotoController.findLastResult
 
 
 
 # Cuponazo Once
-GET        /cuponazoonce/lastResult              com.serinus.loto.controllers.CuponazoOnceController.lastResult
+GET        /cuponazoonce/stats/lastResult          com.serinus.loto.controllers.CuponazoOnceController.findLastResult
 
 
 
 #Euromillones
-GET        /euromillones/lastResult              com.serinus.loto.controllers.EuromillonesController.lastResult
-GET        /euromillones/result/:date            com.serinus.loto.controllers.EuromillonesController.result(date)
+GET        /euromillones/stats/lastResult          com.serinus.loto.controllers.EuromillonesController.findLastResult
+GET        /euromillones/stats/result/:date        com.serinus.loto.controllers.EuromillonesController.findResultForDate(date)
 
 
 
 # Gordo
-GET        /gordo/lastResult                     com.serinus.loto.controllers.GordoController.lastResult
+GET        /gordo/stats/lastResult                 com.serinus.loto.controllers.GordoController.findLastResult
 
 
 
 # Lottoturf
-GET        /lottoturf/lastResult                 com.serinus.loto.controllers.LototurfController.lastResult
+GET        /lottoturf/stats/lastResult             com.serinus.loto.controllers.LototurfController.findLastResult
 
 
 
 # Primitiva
-GET        /primitiva/lastResult                 com.serinus.loto.controllers.PrimitivaController.findLastResult
-GET        /primitiva/stats/freqs                com.serinus.loto.controllers.PrimitivaController.findFrequencies
+GET        /primitiva/stats/lastResult             com.serinus.loto.controllers.PrimitivaController.findLastResult
+GET        /primitiva/stats/freqs                  com.serinus.loto.controllers.PrimitivaController.findFrequencies
 
 
 
 # Scraper [Get Data]
-GET        /scraper/once                         com.serinus.loto.controllers.ScraperController.scrapCuponazo
-GET        /scraper/once/historic                com.serinus.loto.controllers.ScraperController.scrapHistoricCuponazo
-GET        /scraper/euromillones                 com.serinus.loto.controllers.ScraperController.scrapEuromillones
-GET        /scraper/euromillones/historic        com.serinus.loto.controllers.ScraperController.scrapHistoricEuromillones
-GET        /scraper/primitiva                    com.serinus.loto.controllers.ScraperController.scrapPrimitiva
-GET        /scraper/primitiva/historic           com.serinus.loto.controllers.ScraperController.scrapHistoricPrimitiva
-GET        /scraper/bonoloto                     com.serinus.loto.controllers.ScraperController.scrapBonoloto
-GET        /scraper/bonoloto/historic            com.serinus.loto.controllers.ScraperController.scrapHistoricBonoloto
-GET        /scraper/gordo                        com.serinus.loto.controllers.ScraperController.scrapGordo
-GET        /scraper/gordo/historic               com.serinus.loto.controllers.ScraperController.scrapHistoricGordo
-GET        /scraper/lototurf                     com.serinus.loto.controllers.ScraperController.scrapLototurf
-GET        /scraper/lototurf/historic            com.serinus.loto.controllers.ScraperController.scrapHistoricLototurf
+GET        /scraper/once                           com.serinus.loto.controllers.ScraperController.scrapCuponazo
+GET        /scraper/once/historic                  com.serinus.loto.controllers.ScraperController.scrapHistoricCuponazo
+GET        /scraper/euromillones                   com.serinus.loto.controllers.ScraperController.scrapEuromillones
+GET        /scraper/euromillones/historic          com.serinus.loto.controllers.ScraperController.scrapHistoricEuromillones
+GET        /scraper/primitiva                      com.serinus.loto.controllers.ScraperController.scrapPrimitiva
+GET        /scraper/primitiva/historic             com.serinus.loto.controllers.ScraperController.scrapHistoricPrimitiva
+GET        /scraper/bonoloto                       com.serinus.loto.controllers.ScraperController.scrapBonoloto
+GET        /scraper/bonoloto/historic              com.serinus.loto.controllers.ScraperController.scrapHistoricBonoloto
+GET        /scraper/gordo                          com.serinus.loto.controllers.ScraperController.scrapGordo
+GET        /scraper/gordo/historic                 com.serinus.loto.controllers.ScraperController.scrapHistoricGordo
+GET        /scraper/lototurf                       com.serinus.loto.controllers.ScraperController.scrapLototurf
+GET        /scraper/lototurf/historic              com.serinus.loto.controllers.ScraperController.scrapHistoricLototurf
 
 
 
 # Let the part begin!
-GET        /scraper/all                          com.serinus.loto.controllers.ScraperController.scrapAllHistoricData
+GET        /scraper/all                            com.serinus.loto.controllers.ScraperController.scrapAllHistoricData
 

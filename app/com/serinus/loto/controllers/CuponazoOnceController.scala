@@ -2,24 +2,20 @@ package com.serinus.loto.controllers
 
 import javax.inject.Inject
 
-import com.serinus.loto.services.LotteryService
-import com.serinus.loto.utils.Constants
+import com.serinus.loto.lotostats.CuponazoStats
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, Controller}
+import play.api.mvc.{Action, Controller}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CuponazoOnceController @Inject()(lotteryServer: LotteryService) extends Controller {
+class CuponazoOnceController @Inject() (cuponazoStats: CuponazoStats) extends Controller {
 
-
-  def lastResult: Action[AnyContent] = Action.async {
-
-    lotteryServer.getLotteryLastResultOf(Constants.TM_LOTTERY_CUPONAZO_ONCE_NAME).map { resultRestCC =>
-
-      Ok(Json.toJson(resultRestCC))
-
+  def findLastResult = Action.async {
+    cuponazoStats.findLastResult() map {
+      case result => Ok(Json.toJson(result))
+    } recover {
+      case err => InternalServerError(s"Error retrieving the last Cuponazo result: ${err.getMessage}")
     }
-
   }
 
 }
