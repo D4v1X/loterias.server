@@ -26,6 +26,24 @@ class PrimitivaController @Inject() (primitivaStats: PrimitivaStats) extends Con
     }
   }
 
+
+  def findMostFrequentCombination = Action.async {
+    primitivaStats.computeMostFrequentCombination() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the most frequent Primitiva combination: $err")
+    }
+
+  }
+
+
+  def findLeastFrequentCombination = Action.async {
+    primitivaStats.computeLeastFrequentCombination() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the least frequent Primitiva combination: $err")
+    }
+
+  }
+
 }
 
 

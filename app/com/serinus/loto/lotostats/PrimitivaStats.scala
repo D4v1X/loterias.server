@@ -18,6 +18,26 @@ class PrimitivaStats @Inject() (primitivaStatsService: PrimitivaStatsService,
   }
 
 
+  def computeMostFrequentCombination(): Future[Either[StatsError, FreqMap]] = {
+    computeFrequencies() map {
+      case Right(freqs) => Right(freqs.toList.take(6))
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
+  }
+
+
+  def computeLeastFrequentCombination(): Future[Either[StatsError, FreqMap]] = {
+    computeFrequencies() map {
+      case Right(freqs) => Right(freqs.toList.drop(43))
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
+  }
+
+
   def computeFrequencies(): Future[Either[StatsError, FreqMap]] = {
     primitivaStatsService.findAllPrimitivaMainResults() map { resList =>
       Right(doComputeFrequencies(resList))
