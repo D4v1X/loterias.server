@@ -12,6 +12,32 @@ import scala.concurrent.Future
 class EuromillonesStats @Inject() (euromillonesStatsService: EuromillonesStatsService) {
 
 
+  def computeMostFrequentCombination(): Future[Either[StatsError, FreqMap]] = {
+    computeFrequencies() map {
+      case Right(freqs) => Right(freqs.toList.take(5))
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
+  }
+
+
+  def computeLeastFrequentCombination(): Future[Either[StatsError, FreqMap]] = {
+    computeFrequencies() map {
+      case Right(freqs) => Right(freqs.toList.drop(45))
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
+  }
+
+
+  def computeFrequencies(): Future[Either[StatsError, FreqMap]] = {
+    euromillonesStatsService.findAllMainResults() map { resList =>
+      Right(doComputeFrequencies(resList))
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
   }
 
 

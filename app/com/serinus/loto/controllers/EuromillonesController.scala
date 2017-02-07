@@ -35,4 +35,29 @@ class EuromillonesController @Inject() (euromillonesStats: EuromillonesStats,
     }
   }
 
+  def findFrequencies = Action.async {
+    euromillonesStats.computeFrequencies() map {
+      case Right(freqs) => Ok(Json.toJson(freqs))
+      case Left(err) => InternalServerError(s"Error computing the Euromillones frequencies: $err")
+    }
+  }
+
+
+  def findMostFrequentCombination = Action.async {
+    euromillonesStats.computeMostFrequentCombination() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the most frequent Euromillones combination: $err")
+    }
+
+  }
+
+
+  def findLeastFrequentCombination = Action.async {
+    euromillonesStats.computeLeastFrequentCombination() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the least frequent Euromillones combination: $err")
+    }
+
+  }
+
 }

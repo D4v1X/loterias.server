@@ -15,6 +15,9 @@ GET        /cuponazoonce/stats/leastFrequentComb        com.serinus.loto.control
 #Euromillones
 GET        /euromillones/lastResult                     com.serinus.loto.controllers.EuromillonesController.findLastResult
 GET        /euromillones/result/:date                   com.serinus.loto.controllers.EuromillonesController.findResultForDate(date)
+GET        /euromillones/stats/freqs                    com.serinus.loto.controllers.EuromillonesController.findFrequencies
+GET        /euromillones/stats/mostFrequentComb         com.serinus.loto.controllers.EuromillonesController.findMostFrequentCombination
+GET        /euromillones/stats/leastFrequentComb        com.serinus.loto.controllers.EuromillonesController.findLeastFrequentCombination
 
 
 # Gordo
