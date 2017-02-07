@@ -7,6 +7,9 @@ GET        /bonoloto/stats/leastFrequentComb            com.serinus.loto.control
 
 # Cuponazo Once
 GET        /cuponazoonce/lastResult                     com.serinus.loto.controllers.CuponazoOnceController.findLastResult
+GET        /cuponazoonce/stats/freqs                    com.serinus.loto.controllers.CuponazoOnceController.findFrequencies
+GET        /cuponazoonce/stats/mostFrequentComb         com.serinus.loto.controllers.CuponazoOnceController.findMostFrequentCombination
+GET        /cuponazoonce/stats/leastFrequentComb        com.serinus.loto.controllers.CuponazoOnceController.findLeastFrequentCombination
 
 
 #Euromillones
