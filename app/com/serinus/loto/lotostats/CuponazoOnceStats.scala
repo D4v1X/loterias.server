@@ -2,20 +2,18 @@ package com.serinus.loto.lotostats
 
 import javax.inject.Inject
 
-import com.serinus.loto.services.stats.PrimitivaStatsService
+import com.serinus.loto.services.stats.CuponazoOnceStatsService
 import com.serinus.loto.utils.Constants
 import com.serinus.loto.{Freq, FreqMap, StatsError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-
-class PrimitivaStats @Inject() (primitivaStatsService: PrimitivaStatsService) {
-
+class CuponazoOnceStats @Inject() (cuponazoOnceStatsService: CuponazoOnceStatsService) {
 
   def computeMostFrequentCombination(): Future[Either[StatsError, FreqMap]] = {
     computeFrequencies() map {
-      case Right(freqs) => Right(freqs.toList.take(6))
+      case Right(freqs) => Right(freqs.toList.take(5))
       case err @ Left(_) => err
     } recover {
       case err => Left(s"${err.getMessage}")
@@ -25,7 +23,7 @@ class PrimitivaStats @Inject() (primitivaStatsService: PrimitivaStatsService) {
 
   def computeLeastFrequentCombination(): Future[Either[StatsError, FreqMap]] = {
     computeFrequencies() map {
-      case Right(freqs) => Right(freqs.toList.drop(43))
+      case Right(freqs) => Right(freqs.toList.drop(5))
       case err @ Left(_) => err
     } recover {
       case err => Left(s"${err.getMessage}")
@@ -34,7 +32,7 @@ class PrimitivaStats @Inject() (primitivaStatsService: PrimitivaStatsService) {
 
 
   def computeFrequencies(): Future[Either[StatsError, FreqMap]] = {
-    primitivaStatsService.findAllMainResults() map { resList =>
+    cuponazoOnceStatsService.findAllMainResults() map { resList =>
       Right(doComputeFrequencies(resList))
     } recover {
       case err => Left(s"${err.getMessage}")

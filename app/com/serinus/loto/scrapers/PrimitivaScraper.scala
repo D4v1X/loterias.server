@@ -9,7 +9,7 @@ import javax.inject.{Inject, Named}
 import akka.actor.Actor
 import com.serinus.loto._
 import com.serinus.loto.scrapers.ScraperMessages.ScrapHistoricPrimitiva
-import com.serinus.loto.services.LotteryService
+import com.serinus.loto.services.lotteries.PrimitivaLotteryService
 import com.serinus.loto.utils.{Constants, DB}
 import org.jsoup.nodes.{Document, Element}
 import play.api.Logger
@@ -20,7 +20,7 @@ import scala.concurrent.Future
 
 
 @Named(Constants.PRIMITIVA_SCRAPER_NAME)
-class PrimitivaScraper @Inject() (db: DB, lotteryService: LotteryService) extends Actor with GenericScraper {
+class PrimitivaScraper @Inject() (db: DB, primitivaService: PrimitivaLotteryService) extends Actor with GenericScraper {
 
 
   def receive: PartialFunction[Any, Unit] = {
@@ -60,7 +60,7 @@ class PrimitivaScraper @Inject() (db: DB, lotteryService: LotteryService) extend
           Constants.TM_COMB_PART_PRIMITIVA_COMPL_NAME,
           Constants.TM_COMB_PART_PRIMITIVA_REINT_NAME,
           Constants.TM_COMB_PART_PRIMITIVA_JOKER_NAME)
-        val listFutureIds = combinationPartNames map lotteryService.getPrimitivaCombinationPartIdWithName
+        val listFutureIds = combinationPartNames map primitivaService.findCombinationPartIdWithName
         val futureIdList = Future.fold(listFutureIds)(ListBuffer.empty: ListBuffer[Integer])(_ += _)
 
         futureIdList map { combPartIds =>

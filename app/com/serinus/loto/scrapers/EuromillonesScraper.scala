@@ -9,7 +9,7 @@ import javax.inject.{Inject, Named}
 import akka.actor.Actor
 import com.serinus.loto._
 import com.serinus.loto.scrapers.ScraperMessages.{ScrapEuromillones, ScrapHistoricEuromillones}
-import com.serinus.loto.services.LotteryService
+import com.serinus.loto.services.lotteries.EuromillonesLotteryService
 import com.serinus.loto.utils.{Constants, DB}
 import org.jsoup.nodes.Document
 import play.api.Logger
@@ -19,7 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Named(Constants.EUROMILLONES_SCRAPER_NAME)
-class EuromillonesScraper @Inject()(db: DB, lotteryService: LotteryService) extends Actor with GenericScraper {
+class EuromillonesScraper @Inject()(db: DB, euromillonesService: EuromillonesLotteryService) extends Actor with GenericScraper {
 
   override def receive: PartialFunction[Any, Unit] = {
     case ScrapEuromillones => run
@@ -76,7 +76,7 @@ class EuromillonesScraper @Inject()(db: DB, lotteryService: LotteryService) exte
     try {
       if (raffleResultAvailableForDate(doc, raffleDate)) {
         val combinationPartNames = List(Constants.TM_COMB_PART_EUROMILLONES_COMB_NAME, Constants.TM_COMB_PART_EUROMILLONES_ESTRE_NAME, Constants.TM_COMB_PART_EUROMILLONES_MILLON_NAME)
-        val listFutureIds = combinationPartNames map lotteryService.getEuromillonesCombinationPartIdWithName
+        val listFutureIds = combinationPartNames map euromillonesService.findCombinationPartIdWithName
         val futureIdList = Future.fold(listFutureIds)(ListBuffer.empty: ListBuffer[Integer])(_ += _)
 
         futureIdList map { combPartIds =>

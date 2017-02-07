@@ -2,13 +2,15 @@ package com.serinus.loto.lotostats
 
 import javax.inject.Inject
 
-import com.serinus.loto.services.LotteryService
+import com.serinus.loto.services.stats.GordoStatsService
 import com.serinus.loto.utils.Constants
+import com.serinus.loto.{Freq, FreqMap, StatsError}
 
-class GordoStats @Inject() (lotteryService: LotteryService) {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-  def findLastResult() = {
-    lotteryService.getLotteryLastResultOf(Constants.TM_LOTTERY_GORDO_NAME)
+class GordoStats @Inject() (gordoStatsService: GordoStatsService) {
+
   }
 
 }

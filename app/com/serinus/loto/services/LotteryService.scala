@@ -6,7 +6,7 @@ import com.serinus.loto.exceptions.DBException
 import com.serinus.loto.model.caseclasses.{CombinationPartCC, LotteryCC, ResultCC}
 import com.serinus.loto.model.jooq.Tables
 import com.serinus.loto.model.jooq.Tables.{TM_COMBINATION_PART, TM_LOTTERY, TW_RESULT}
-import com.serinus.loto.utils.{Constants, DB}
+import com.serinus.loto.utils.DB
 import com.serinus.loto.{CombinationPartName, LotteryName, RaffleDate}
 import org.jooq.impl.DSL.max
 
@@ -15,33 +15,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class LotteryService @Inject() (db: DB) {
+class LotteryService @Inject()(db: DB) {
 
-  def getLototurfCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_LOTOTURF_NAME, combinationPartName)
-  }
 
-  def getEuromillonesCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_EUROMILLONES_NAME, combinationPartName)
-  }
-
-  def getGordoCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_GORDO_NAME, combinationPartName)
-  }
-
-  def getBonolotoCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_BONOLOTO_NAME, combinationPartName)
-  }
-
-  def getPrimitivaCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_PRIMITIVA_NAME, combinationPartName)
-  }
-
-  def getCuponazoCombinationPartIdWithName(combinationPartName: CombinationPartName): Future[Integer] = {
-    getLotteryCombinationPartIdWithName(Constants.TM_LOTTERY_CUPONAZO_ONCE_NAME, combinationPartName)
-  }
-
-  private def getLotteryCombinationPartIdWithName(lotteryName: LotteryName, combinationPartName: CombinationPartName): Future[Integer] = {
+  def findLotteryCombinationPartIdWithName(lotteryName: LotteryName, combinationPartName: CombinationPartName): Future[Integer] = {
     db.query { db =>
 
       val tmCombinationPartId = db
@@ -62,20 +39,20 @@ class LotteryService @Inject() (db: DB) {
   }
 
 
-  def getLotteryLastResultOf(lotteryName: LotteryName): Future[ResultCC] = {
+  def findLotteryLastResultOf(lotteryName: LotteryName): Future[ResultCC] = {
 
     for {
 
-      lastRaffleDay <- getLotteryLastRaffleDayOf(lotteryName)
+      lastRaffleDay <- findLotteryLastRaffleDayOf(lotteryName)
 
-      resultRestCC <- getLotteryResult(lotteryName, lastRaffleDay)
+      resultRestCC <- findLotteryResult(lotteryName, lastRaffleDay)
 
     } yield resultRestCC
 
   }
 
 
-  def getLotteryLastRaffleDayOf(lotteryName: LotteryName): Future[RaffleDate] = {
+  def findLotteryLastRaffleDayOf(lotteryName: LotteryName): Future[RaffleDate] = {
 
     db.query { db =>
 
@@ -97,7 +74,7 @@ class LotteryService @Inject() (db: DB) {
   }
 
 
-  def getLotteryResult(lotteryName: LotteryName, raffleDate: RaffleDate): Future[ResultCC] = {
+  def findLotteryResult(lotteryName: LotteryName, raffleDate: RaffleDate): Future[ResultCC] = {
 
     //TODO Add Error when no exist Result for this RaffleDate
     db.query { db =>
@@ -124,7 +101,7 @@ class LotteryService @Inject() (db: DB) {
     }
   }
 
-  def getLotteryNames: Future[Seq[LotteryCC]] = {
+  def findAllLotteryNames: Future[Seq[LotteryCC]] = {
 
     db.query { db =>
 

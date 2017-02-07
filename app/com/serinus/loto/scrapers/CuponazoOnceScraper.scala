@@ -9,7 +9,7 @@ import javax.inject.{Inject, Named}
 import akka.actor.Actor
 import com.serinus.loto._
 import com.serinus.loto.scrapers.ScraperMessages.{ScrapCuponazo, ScrapHistoricCuponazo}
-import com.serinus.loto.services.LotteryService
+import com.serinus.loto.services.lotteries.CuponazoOnceLotteryService
 import com.serinus.loto.utils.{Constants, DB}
 import org.jsoup.nodes.Document
 import play.api.Logger
@@ -21,7 +21,7 @@ import scala.concurrent.Future
 
 
 @Named(Constants.CUPONAZO_ONCE_SCRAPER_NAME)
-class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) extends Actor with GenericScraper {
+class CuponazoOnceScraper @Inject() (db: DB, cuponazoOnceService: CuponazoOnceLotteryService) extends Actor with GenericScraper {
 
 
   def receive: PartialFunction[Any, Unit] = {
@@ -43,7 +43,7 @@ class CuponazoOnceScraper @Inject() (db: DB, lotteryService: LotteryService) ext
 
     try {
       if (raffleResultAvailableForDate(doc, raffleDate)) {
-        val listFutureIds = getCombinationPartNames(doc) map lotteryService.getCuponazoCombinationPartIdWithName
+        val listFutureIds = getCombinationPartNames(doc) map cuponazoOnceService.findCombinationPartIdWithName
         val futureIdList = Future.fold(listFutureIds)(ListBuffer.empty: ListBuffer[Integer])(_ += _)
 
         futureIdList map { combPartIds =>
