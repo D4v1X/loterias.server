@@ -23,4 +23,22 @@ class BonolotoStatsService @Inject() (db: DB,
 
   }
 
+  def findAllComplementerioResults(): Future[Seq[String]] = {
+
+    statsService.findAllTheResultsOfACombinationPartNameOfALottery(
+      lotteryName,
+      Constants.TM_COMB_PART_BONOLOTO_COMPL_NAME
+    )
+
+  }
+
+  def findAllReintegroResults(): Future[Seq[String]] = {
+
+    statsService.findAllTheResultsOfACombinationPartNameOfALottery(
+      lotteryName,
+      Constants.TM_COMB_PART_BONOLOTO_REINT_NAME
+    )
+
+  }
+
 }

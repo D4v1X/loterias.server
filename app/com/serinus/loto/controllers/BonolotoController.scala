@@ -20,16 +20,17 @@ class BonolotoController @Inject() (bonolotoStats: BonolotoStats,
     }
   }
 
-  def findFrequencies = Action.async {
-    bonolotoStats.computeFrequencies() map {
+
+  def findFrequenciesMainCombination = Action.async {
+    bonolotoStats.computeFrequenciesMainCombination() map {
       case Right(freqs) => Ok(Json.toJson(freqs))
-      case Left(err) => InternalServerError(s"Error computing the Bonoloto frequencies: $err")
+      case Left(err) => InternalServerError(s"Error computing the Bonoloto combination frequencies: $err")
     }
   }
 
 
-  def findMostFrequentCombination = Action.async {
-    bonolotoStats.computeMostFrequentCombination() map {
+  def findMostFrequentMainCombination = Action.async {
+    bonolotoStats.computeMostFrequentMainCombination() map {
       case Right(comb) => Ok(Json.toJson(comb))
       case Left(err) => InternalServerError(s"Error the most frequent Bonoloto combination: $err")
     }
@@ -37,12 +38,60 @@ class BonolotoController @Inject() (bonolotoStats: BonolotoStats,
   }
 
 
-  def findLeastFrequentCombination = Action.async {
-    bonolotoStats.computeLeastFrequentCombination() map {
+  def findLeastFrequentMainCombination = Action.async {
+    bonolotoStats.computeLeastFrequentMainCombination() map {
       case Right(comb) => Ok(Json.toJson(comb))
       case Left(err) => InternalServerError(s"Error the least frequent Bonoloto combination: $err")
     }
 
   }
 
+  def findFrequenciesComplementario() = Action.async {
+    bonolotoStats.computeFrequenciesComplementario() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error computing the Bonoloto complementario frequencies: $err")
+    }
+
+  }
+
+  def findMostFrequentComplementario = Action.async {
+    bonolotoStats.computeMostFrequentComplementario() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the most frequent Bonoloto complementario: $err")
+    }
+
+  }
+
+  def findLeastFrequentComplementario = Action.async {
+    bonolotoStats.computeLeastFrequentComplementario() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the least frequent Bonoloto complementario: $err")
+    }
+
+  }
+
+  def findFrequenciesReintegro() = Action.async {
+    bonolotoStats.computeFrequentReintegro() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error computing the Bonoloto reintegro frequencies: $err")
+    }
+
+  }
+
+  def findMostFrequentReintegro = Action.async {
+    bonolotoStats.computeMostFrequentReintegro() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the most frequent Bonoloto reintegro: $err")
+    }
+
+  }
+
+  def findLeastFrequentReintegro = Action.async {
+    bonolotoStats.computeLeastFrequentReintegro() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the least frequent Bonoloto reintegro: $err")
+    }
+
+  }
+  
 }

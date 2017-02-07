@@ -1,8 +1,17 @@
 # Bonoloto
 GET        /bonoloto/lastResult                         com.serinus.loto.controllers.BonolotoController.findLastResult
-GET        /bonoloto/stats/freqs                        com.serinus.loto.controllers.BonolotoController.findFrequencies
-GET        /bonoloto/stats/mostFrequentComb             com.serinus.loto.controllers.BonolotoController.findMostFrequentCombination
-GET        /bonoloto/stats/leastFrequentComb            com.serinus.loto.controllers.BonolotoController.findLeastFrequentCombination
+
+GET        /bonoloto/stats/freqsComb                    com.serinus.loto.controllers.BonolotoController.findFrequenciesMainCombination
+GET        /bonoloto/stats/mostFrequentComb             com.serinus.loto.controllers.BonolotoController.findMostFrequentMainCombination
+GET        /bonoloto/stats/leastFrequentComb            com.serinus.loto.controllers.BonolotoController.findLeastFrequentMainCombination
+
+GET        /bonoloto/stats/freqsCompl                   com.serinus.loto.controllers.BonolotoController.findFrequenciesComplementario
+GET        /bonoloto/stats/mostFrequentCompl            com.serinus.loto.controllers.BonolotoController.findMostFrequentComplementario
+GET        /bonoloto/stats/leastFrequentCompl           com.serinus.loto.controllers.BonolotoController.findLeastFrequentComplementario
+
+GET        /bonoloto/stats/freqsReint                   com.serinus.loto.controllers.BonolotoController.findFrequenciesReintegro
+GET        /bonoloto/stats/mostFrequentReint            com.serinus.loto.controllers.BonolotoController.findMostFrequentReintegro
+GET        /bonoloto/stats/leastFrequentReint           com.serinus.loto.controllers.BonolotoController.findLeastFrequentReintegro
 
 
 # Cuponazo Once

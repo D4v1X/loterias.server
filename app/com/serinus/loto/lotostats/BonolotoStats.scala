@@ -11,8 +11,18 @@ import scala.concurrent.Future
 
 class BonolotoStats @Inject() (bonolotoStatsService: BonolotoStatsService) {
 
-  def computeMostFrequentCombination(): Future[Either[StatsError, FreqMap]] = {
-    computeFrequencies() map {
+  def computeFrequenciesMainCombination(): Future[Either[String, FreqMap]] = {
+    computeFrequenciesOf(bonolotoStatsService.findAllMainResults()) map {
+      case Right(freqs) => Right(freqs)
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
+
+  }
+
+  def computeMostFrequentMainCombination(): Future[Either[StatsError, FreqMap]] = {
+    computeFrequenciesOf(bonolotoStatsService.findAllMainResults()) map {
       case Right(freqs) => Right(freqs.toList.take(6))
       case err @ Left(_) => err
     } recover {
@@ -21,8 +31,8 @@ class BonolotoStats @Inject() (bonolotoStatsService: BonolotoStatsService) {
   }
 
 
-  def computeLeastFrequentCombination(): Future[Either[StatsError, FreqMap]] = {
-    computeFrequencies() map {
+  def computeLeastFrequentMainCombination(): Future[Either[StatsError, FreqMap]] = {
+    computeFrequenciesOf(bonolotoStatsService.findAllMainResults()) map {
       case Right(freqs) => Right(freqs.toList.drop(43))
       case err @ Left(_) => err
     } recover {
@@ -30,9 +40,67 @@ class BonolotoStats @Inject() (bonolotoStatsService: BonolotoStatsService) {
     }
   }
 
+  def computeFrequenciesComplementario(): Future[Either[String, FreqMap]] = {
+    computeFrequenciesOf(bonolotoStatsService.findAllComplementerioResults()) map {
+      case Right(freqs) => Right(freqs)
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
 
-  def computeFrequencies(): Future[Either[StatsError, FreqMap]] = {
-    bonolotoStatsService.findAllMainResults() map { resList =>
+  }
+
+  def computeMostFrequentComplementario(): Future[Either[StatsError, FreqMap]] = {
+    computeFrequenciesOf(bonolotoStatsService.findAllComplementerioResults()) map {
+      case Right(freqs) => Right(freqs.toList.take(1))
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
+  }
+
+
+  def computeLeastFrequentComplementario(): Future[Either[StatsError, FreqMap]] = {
+    computeFrequenciesOf(bonolotoStatsService.findAllComplementerioResults()) map {
+      case Right(freqs) => Right(freqs.toList.drop(48))
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
+  }
+
+  def computeFrequentReintegro(): Future[Either[String, FreqMap]] = {
+    computeFrequenciesOf(bonolotoStatsService.findAllReintegroResults()) map {
+      case Right(freqs) => Right(freqs)
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
+
+  }
+
+  def computeMostFrequentReintegro(): Future[Either[StatsError, FreqMap]] = {
+    computeFrequenciesOf(bonolotoStatsService.findAllReintegroResults()) map {
+      case Right(freqs) => Right(freqs.toList.take(1))
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
+  }
+
+
+  def computeLeastFrequentReintegro(): Future[Either[StatsError, FreqMap]] = {
+    computeFrequenciesOf(bonolotoStatsService.findAllReintegroResults()) map {
+      case Right(freqs) => Right(freqs.toList.drop(9))
+      case err @ Left(_) => err
+    } recover {
+      case err => Left(s"${err.getMessage}")
+    }
+  }
+
+
+  def computeFrequenciesOf(results: Future[Seq[String]]): Future[Either[String, FreqMap]] = {
+    results map { resList =>
       Right(doComputeFrequencies(resList))
     } recover {
       case err => Left(s"${err.getMessage}")
