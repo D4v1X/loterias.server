@@ -29,6 +29,9 @@ GET        /gordo/stats/leastFrequentComb               com.serinus.loto.control
 
 # Lottoturf
 GET        /lottoturf/lastResult                        com.serinus.loto.controllers.LototurfController.findLastResult
+GET        /lottoturf/stats/freqs                       com.serinus.loto.controllers.LototurfController.findFrequencies
+GET        /lottoturf/stats/mostFrequentComb            com.serinus.loto.controllers.LototurfController.findMostFrequentCombination
+GET        /lottoturf/stats/leastFrequentComb           com.serinus.loto.controllers.LototurfController.findLeastFrequentCombination
 
 
 # Primitiva

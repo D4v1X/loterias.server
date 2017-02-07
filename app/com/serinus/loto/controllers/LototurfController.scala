@@ -20,4 +20,29 @@ class LototurfController @Inject() (lototurfStats: LototurfStats,
     }
   }
 
+  def findFrequencies = Action.async {
+    lototurfStats.computeFrequencies() map {
+      case Right(freqs) => Ok(Json.toJson(freqs))
+      case Left(err) => InternalServerError(s"Error computing the Lototurf frequencies: $err")
+    }
+  }
+
+
+  def findMostFrequentCombination = Action.async {
+    lototurfStats.computeMostFrequentCombination() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the most frequent Lototurf combination: $err")
+    }
+
+  }
+
+
+  def findLeastFrequentCombination = Action.async {
+    lototurfStats.computeLeastFrequentCombination() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the least frequent Lototurf combination: $err")
+    }
+
+  }
+
 }
