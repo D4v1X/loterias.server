@@ -20,4 +20,29 @@ class GordoController @Inject() (gordoStats: GordoStats,
     }
   }
 
+  def findFrequencies = Action.async {
+    gordoStats.computeFrequencies() map {
+      case Right(freqs) => Ok(Json.toJson(freqs))
+      case Left(err) => InternalServerError(s"Error computing the Gordo frequencies: $err")
+    }
+  }
+
+
+  def findMostFrequentCombination = Action.async {
+    gordoStats.computeMostFrequentCombination() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the most frequent Gordo combination: $err")
+    }
+
+  }
+
+
+  def findLeastFrequentCombination = Action.async {
+    gordoStats.computeLeastFrequentCombination() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the least frequent Gordo combination: $err")
+    }
+
+  }
+
 }
