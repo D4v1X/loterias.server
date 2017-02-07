@@ -1,5 +1,8 @@
 # Bonoloto
 GET        /bonoloto/lastResult                         com.serinus.loto.controllers.BonolotoController.findLastResult
+GET        /bonoloto/stats/freqs                        com.serinus.loto.controllers.BonolotoController.findFrequencies
+GET        /bonoloto/stats/mostFrequentComb             com.serinus.loto.controllers.BonolotoController.findMostFrequentCombination
+GET        /bonoloto/stats/leastFrequentComb            com.serinus.loto.controllers.BonolotoController.findLeastFrequentCombination
 
 
 # Cuponazo Once

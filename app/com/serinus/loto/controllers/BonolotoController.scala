@@ -20,4 +20,29 @@ class BonolotoController @Inject() (bonolotoStats: BonolotoStats,
     }
   }
 
+  def findFrequencies = Action.async {
+    bonolotoStats.computeFrequencies() map {
+      case Right(freqs) => Ok(Json.toJson(freqs))
+      case Left(err) => InternalServerError(s"Error computing the Bonoloto frequencies: $err")
+    }
+  }
+
+
+  def findMostFrequentCombination = Action.async {
+    bonolotoStats.computeMostFrequentCombination() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the most frequent Bonoloto combination: $err")
+    }
+
+  }
+
+
+  def findLeastFrequentCombination = Action.async {
+    bonolotoStats.computeLeastFrequentCombination() map {
+      case Right(comb) => Ok(Json.toJson(comb))
+      case Left(err) => InternalServerError(s"Error the least frequent Bonoloto combination: $err")
+    }
+
+  }
+
 }
